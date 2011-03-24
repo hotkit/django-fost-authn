@@ -51,6 +51,3 @@ class InvalidHeader(TestCase):
     def test_fost_authz_no_secret(self):
         self._do_test('FOST key')
 
-    def test_fost_authz_invalid_secret(self):
-        self._do_test('FOST key:secret')
-
