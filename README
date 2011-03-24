@@ -1,5 +1,5 @@
-= Django Fost Authentication
+# Django Fost Authentication #
 
 
-An authentication back-end for Django implementing request signing using strong cryptography.
+An authentication back-end for Django implementing request signing using strong cryptography. It is based on the request signing mechanism implemented by Amazon for s3.
 
