@@ -12,3 +12,7 @@ For best results create a virtualenv, then initialise it with test.pip.:
     mkvirtualenv django-fost-authn
     pip install -r test.pip
 
+Run the tests using:
+
+    ./runtest
+

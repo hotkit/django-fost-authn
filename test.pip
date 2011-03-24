@@ -1,3 +1,4 @@
+coverage
+django == 1.2.5
 nose
 unittest2
-django == 1.2.5
