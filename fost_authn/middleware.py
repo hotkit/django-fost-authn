@@ -1,5 +1,7 @@
 import logging
 
+#import django.contrib.auth
+
 
 class Middleware:
     def get_mechanism(self, request):
@@ -20,3 +22,5 @@ class Middleware:
         [mechanism, authorization] = self.get_mechanism(request)
         if mechanism == "FOST":
             [key, hmac] = self.get_userpass(authorization)
+            #request.user = django.contrib.auth.authenticate(
+                #request = request, key = key, hmac = hmac)
