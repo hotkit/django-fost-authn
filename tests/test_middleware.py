@@ -33,12 +33,24 @@ class AuthorizationParser(TestCase):
         self.assertEquals(u, [None, None])
 
 
-class RequestHandler(TestCase):
+class InvalidHeader(TestCase):
     def setUp(self):
         self.m = Middleware()
 
-    def test_no_authorization_header(self):
-        r = _Mockrequest(None)
+    def _do_test(self, header):
+        r = _Mockrequest(header)
         u = self.m.process_request(r)
         self.assertEquals(u, None)
+
+    def test_no_authorization_header(self):
+        self._do_test(None)
+
+    def test_fost_authz_no_creds(self):
+        self._do_test('FOST')
+
+    def test_fost_authz_no_secret(self):
+        self._do_test('FOST key')
+
+    def test_fost_authz_invalid_secret(self):
+        self._do_test('FOST key:secret')
 

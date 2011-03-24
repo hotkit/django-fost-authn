@@ -18,3 +18,5 @@ class Middleware:
 
     def process_request(self, request):
         [mechanism, authorization] = self.get_mechanism(request)
+        if mechanism == "FOST":
+            [key, hmac] = self.get_userpass(authorization)
