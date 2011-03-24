@@ -1,0 +1,5 @@
+= Django Fost Authentication
+
+
+An authentication back-end for Django implementing request signing using strong cryptography.
+
