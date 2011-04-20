@@ -1,4 +1,5 @@
 from unittest2 import TestCase
+import mock
 
 from fost_authn import Middleware
 
@@ -50,4 +51,10 @@ class InvalidHeader(TestCase):
 
     def test_fost_authz_no_secret(self):
         self._do_test('FOST key')
+
+    def test_fost_authz_key_and_secret(self):
+        def authenticate(**kwargs):
+            pass
+        with mock.patch('django.contrib.auth.authenticate', authenticate):
+            self._do_test('FOST key:secret')
 
