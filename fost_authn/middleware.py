@@ -23,5 +23,7 @@ class Middleware:
         if mechanism == "FOST":
             [key, hmac] = self.get_userpass(authorization)
             if key and hmac:
-                request.user = django.contrib.auth.authenticate(
+                user = django.contrib.auth.authenticate(
                     request = request, key = key, hmac = hmac)
+                if user:
+                    request.user = user
