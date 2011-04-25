@@ -2,5 +2,5 @@
 
 cd test-projects/no_settings
 export PYTHONPATH=${PYTHONPATH}:../..
-nosetests --with-coverage  --cover-erase \
+python ./manage.py test --with-coverage  --cover-erase \
     --cover-package=fost_authn

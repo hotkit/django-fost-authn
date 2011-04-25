@@ -1,5 +1,6 @@
 coverage
 django == 1.2.5
+django-nose
 mock
 nose
 unittest2
