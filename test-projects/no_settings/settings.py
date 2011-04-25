@@ -1,4 +1,6 @@
 # Django settings for no_settings project.
+import os
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -8,6 +10,9 @@ TEST_RUNNER='django_nose.NoseTestSuiteRunner'
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+_join_with_project_path = lambda a, *p: os.path.join(PROJECT_ROOT, a, *p)
 
 MANAGERS = ADMINS
 
@@ -80,6 +85,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'no_settings.urls'
 
 TEMPLATE_DIRS = (
+    _join_with_project_path('templates'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
