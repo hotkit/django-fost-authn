@@ -101,5 +101,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'django_nose'
+
+    # Needed to get the Django nose test runner working
+    'django_nose',
+
 )
