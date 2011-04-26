@@ -74,12 +74,21 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+# The authentication backends have been added to the settings file
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'fost_authn.FostBackend',
+)
+
+# The Fost authentication middleware has been added to the end.
+# It doesn't matter where it goes
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'fost_authn.Middleware',
 )
 
 ROOT_URLCONF = 'no_models.urls'
