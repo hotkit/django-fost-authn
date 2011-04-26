@@ -1,4 +1,4 @@
-# Django settings for no_settings project.
+# Django settings for no_models project.
 import os
 
 
@@ -82,7 +82,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'no_settings.urls'
+ROOT_URLCONF = 'no_models.urls'
 
 TEMPLATE_DIRS = (
     _join_with_project_path('templates'),
