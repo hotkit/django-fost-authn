@@ -105,4 +105,6 @@ INSTALLED_APPS = (
     # Needed to get the Django nose test runner working
     'django_nose',
 
+    # Provides some testing feedback
+    'fost_auth_debug',
 )
