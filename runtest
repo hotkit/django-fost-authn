@@ -3,4 +3,4 @@
 cd test-projects/no_models
 export PYTHONPATH=${PYTHONPATH}:../..
 python ./manage.py test --with-coverage --cover-erase \
-    --cover-package=fost_authn
+    --cover-package=fost_authn --cover-package=fost_authn_debug

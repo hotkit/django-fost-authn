@@ -106,5 +106,5 @@ INSTALLED_APPS = (
     'django_nose',
 
     # Provides some testing feedback
-    'fost_auth_debug',
+    'fost_authn_debug',
 )
