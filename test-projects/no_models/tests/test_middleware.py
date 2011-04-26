@@ -38,10 +38,10 @@ class InvalidHeader(TestCase):
     def setUp(self):
         self.m = Middleware()
 
-    def _do_test(self, header):
-        r = _Mockrequest(header)
-        u = self.m.process_request(r)
-        self.assertFalse(hasattr(r, 'user'))
+    def _do_test(self, header, gets_user=False):
+        self.request = _Mockrequest(header)
+        u = self.m.process_request(self.request)
+        self.assertEquals(hasattr(self.request, 'user'), gets_user)
 
     def test_no_authorization_header(self):
         self._do_test(None)
@@ -53,9 +53,8 @@ class InvalidHeader(TestCase):
         self._do_test('FOST key')
 
     def test_fost_authz_key_and_secret(self):
-        called = False
         def authenticate(**kwargs):
-            called = True
+            return True
         with mock.patch('django.contrib.auth.authenticate', authenticate):
-            self._do_test('FOST key:secret')
-        self.assertTrue(called)
+            self._do_test('FOST key:secret', gets_user=True)
+        self.assertTrue(self.request.user)
