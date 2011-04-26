@@ -5,8 +5,6 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-TEST_RUNNER='django_nose.NoseTestSuiteRunner'
-
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -117,3 +115,6 @@ INSTALLED_APPS = (
     # Provides some testing feedback
     'fost_authn_debug',
 )
+
+# Needed to get the Django nose test runner working
+TEST_RUNNER='django_nose.NoseTestSuiteRunner'
