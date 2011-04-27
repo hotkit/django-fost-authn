@@ -24,8 +24,8 @@ class FostBackend(object):
             signed_time = datetime.strptime(
                 request.META['HTTP_X_FOST_TIMESTAMP'][:19], '%Y-%m-%d %H:%M:%S')
             utc_now = datetime.utcnow()
-            delta = timedelta(0,
-                getattr(settings, 'FOST_AUTHN_MAXIMUM_CLOCK_SKEW', 300))
+            delta = timedelta(0, getattr(settings,
+                'FOST_AUTHN_MAXIMUM_CLOCK_SKEW', 300))
             skew = max(signed_time - utc_now, utc_now - signed_time)
             logging.info(
                 "Clock skew is %s based on signed time %s and current time %s "
