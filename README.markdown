@@ -36,6 +36,13 @@ Finding a secret from an API key is done by giving a function to the FOST_AUTHN_
         return api_keys.objects.get(key=key).secret
 
 
+## Optional settings ##
+
+FOST_AUTHN_MISSIGNED_SLEEP_TIME
+
+The amount of time to sleep when a FOST Authorization header is incorrect. Defaults to 0.5 seconds.
+
+
 # Running tests #
 
 For best results create a virtualenv, then initialise it with test.pip.:
