@@ -18,12 +18,18 @@ class Middleware:
             return credentials
         return [None, None]
 
-    def process_request(self, request):
+    def key_hmac(self, request):
         [mechanism, authorization] = self.get_mechanism(request)
         if mechanism == "FOST":
             [key, hmac] = self.get_userpass(authorization)
             if key and hmac:
-                user = django.contrib.auth.authenticate(
-                    request = request, key = key, hmac = hmac)
-                if user:
-                    request.user = user
+                return key, hmac
+        return None, None
+
+    def process_request(self, request):
+        key, hmac = self.key_hmac(request)
+        if key and hmac:
+            user = django.contrib.auth.authenticate(
+                request = request, key = key, hmac = hmac)
+            if user:
+                request.user = user
