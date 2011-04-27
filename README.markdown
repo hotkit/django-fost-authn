@@ -27,6 +27,15 @@ Unless you've already added a custom authentication backend your settings.py pro
         'fost_authn.FostBackend',
     )
 
+In order to be able to authenticate requests the authentication backend needs to know how to map API keys to secrets and to users.
+
+Finding a secret from an API key is done by giving a function to the FOST_AUTHN_GET_SECRET setting. If this is not configured then no requests can be authenticated. The following is an example of what can be put in the settings.py.
+
+    def FOST_AUTHN_GET_SECRET(request, key):
+        from myapp.models import api_keys
+        return api_keys.objects.get(key=key).secret
+
+
 # Running tests #
 
 For best results create a virtualenv, then initialise it with test.pip.:

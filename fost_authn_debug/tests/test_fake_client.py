@@ -1,5 +1,7 @@
 from unittest2 import TestCase
+import mock
 
+from django.conf import settings
 from django.test.client import Client
 
 
@@ -9,8 +11,15 @@ class TestFakeHTTPClientUnsigned(TestCase):
     def setUp(self):
         self.ua = Client()
 
+
     def test_get_root(self):
-        self.ua.get('/debug/')
+        called = []
+        def authenticate(*a, **kw):
+            called.append(True)
+        with mock.patch('fost_authn.FostBackend.authenticate', authenticate):
+            self.ua.get('/debug/')
+        # Nothing calls the Django authenticate function so the Fost backend is never called
+        self.assertFalse(called)
 
     def test_get_anonymous(self):
         response = self.ua.get('/debug/anonymous/')
@@ -26,8 +35,38 @@ class TestFakeHTTPClientMissigned(TestCase):
 
     def setUp(self):
         self.ua = Client()
-        old_get = self.ua.get
-        self.ua.get = lambda p, d = {}: old_get(p, d, HTTP_AUTHORIZATION='FOST key:hmac')
 
-    def test_get_root(self):
-        self.ua.get('/debug/')
+
+    def test_get_root_ensure_sleep(self):
+        slept = []
+        def sleep(t):
+            self.assertTrue(t, 0.5)
+            slept.append(True)
+        with mock.patch('time.sleep', sleep):
+            self.ua.get('/debug/', HTTP_AUTHORIZATION='FOST key:hmac')
+        self.assertTrue(slept)
+
+    def test_get_root_ensure_sleep_configured(self):
+        slept = []
+        def sleep(t):
+            self.assertTrue(t, 1)
+            slept.append(True)
+        try:
+            setattr(settings, 'FOST_AUTHN_MISSIGNED_SLEEP_TIME', 1)
+            with mock.patch('time.sleep', sleep):
+                self.ua.get('/debug/', HTTP_AUTHORIZATION='FOST key:hmac')
+        finally:
+            delattr(settings, 'FOST_AUTHN_MISSIGNED_SLEEP_TIME')
+        self.assertTrue(slept)
+
+    def test_get_root_can_get_secret(self):
+        secret_fetched = []
+        def get_secret(request, key):
+            secret_fetched.append(True)
+            return 'secret-value'
+        try:
+            setattr(settings, 'FOST_AUTHN_GET_SECRET', get_secret)
+            self.ua.get('/debug/', HTTP_AUTHORIZATION='FOST key:hmac')
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertTrue(secret_fetched)
