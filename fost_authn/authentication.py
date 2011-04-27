@@ -17,10 +17,14 @@ class FostBackend(object):
             request = kwargs['request']
             key = kwargs['key']
             hmac = kwargs['hmac']
-            if not hasattr(settings, 'FOST_AUTHN_GET_SECRET') or \
-                    not request.META.has_key('HTTP_X_FOST_TIMESTAMP'):
+            if not hasattr(settings, 'FOST_AUTHN_GET_SECRET'):
+                logging.error("FOST_AUTHN_GET_SECRET is not defined")
+                return _forbid()
+            elif not request.META.has_key('HTTP_X_FOST_TIMESTAMP'):
+                logging.info("No HTTP_X_FOST_TIMESTAMP was found")
                 return _forbid()
             secret = settings.FOST_AUTHN_GET_SECRET(request, key)
+            logging.info("Found secret %s for key %s", secret, key)
             signed_time = datetime.strptime(
                 request.META['HTTP_X_FOST_TIMESTAMP'][:19], '%Y-%m-%d %H:%M:%S')
             utc_now = datetime.utcnow()
@@ -33,7 +37,7 @@ class FostBackend(object):
                 skew, signed_time, utc_now, delta,
                 "skew is too high" if skew > delta else "skew is ok")
             if skew < delta:
-                pass
+                return None
             else:
                 return _forbid("Clock skew too high")
 
