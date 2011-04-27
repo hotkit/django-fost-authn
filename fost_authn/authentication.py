@@ -1,4 +1,4 @@
-from fost_authn.hmac import fost_hmac_signature
+from fost_authn.signature import fost_hmac_signature
 
 
 class FostBackend(object):
