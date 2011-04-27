@@ -42,6 +42,10 @@ FOST_AUTHN_MISSIGNED_SLEEP_TIME
 
 The amount of time to sleep when a FOST Authorization header is incorrect. Defaults to 0.5 seconds.
 
+FOST_AUTHN_MAXIMUM_CLOCK_SKEW
+
+The maximum allowed difference between the time when the request was signed and the time on the server. Defaults to 300 seconds.
+
 
 # Running tests #
 

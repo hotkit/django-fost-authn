@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest2 import TestCase
 import mock
 
@@ -35,7 +36,9 @@ class TestFakeHTTPClientMissigned(TestCase):
 
     def setUp(self):
         self.ua = Client()
-
+        self.headers = dict(
+            HTTP_AUTHORIZATION='FOST key:hmac',
+            HTTP_X_FOST_TIMESTAMP='2011-04-27 11:10:00')
 
     def test_get_root_ensure_sleep(self):
         slept = []
@@ -43,7 +46,7 @@ class TestFakeHTTPClientMissigned(TestCase):
             self.assertTrue(t, 0.5)
             slept.append(True)
         with mock.patch('time.sleep', sleep):
-            self.ua.get('/debug/', HTTP_AUTHORIZATION='FOST key:hmac')
+            self.ua.get('/debug/', **self.headers)
         self.assertTrue(slept)
 
     def test_get_root_ensure_sleep_configured(self):
@@ -54,19 +57,41 @@ class TestFakeHTTPClientMissigned(TestCase):
         try:
             setattr(settings, 'FOST_AUTHN_MISSIGNED_SLEEP_TIME', 1)
             with mock.patch('time.sleep', sleep):
-                self.ua.get('/debug/', HTTP_AUTHORIZATION='FOST key:hmac')
+                self.ua.get('/debug/', **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_MISSIGNED_SLEEP_TIME')
         self.assertTrue(slept)
 
-    def test_get_root_can_get_secret(self):
-        secret_fetched = []
+    def test_get_root_can_get_secret_but_clock_skew_too_high(self):
+        secret_fetched, forbidden = [], []
         def get_secret(request, key):
             secret_fetched.append(True)
             return 'secret-value'
+        def clock_skew_error(error):
+            forbidden.append(True)
+            self.assertEquals(error, 'Clock skew too high')
         try:
             setattr(settings, 'FOST_AUTHN_GET_SECRET', get_secret)
-            self.ua.get('/debug/', HTTP_AUTHORIZATION='FOST key:hmac')
+            with mock.patch('fost_authn.authentication._forbid', clock_skew_error):
+                self.ua.get('/debug/', **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertTrue(secret_fetched)
+        self.assertTrue(forbidden)
+
+    def test_get_root_can_get_secret_clock_skew_in_range(self):
+        secret_fetched, forbidden = [], []
+        def get_secret(request, key):
+            secret_fetched.append(True)
+            return 'secret-value'
+        def clock_skew_error(error):
+            forbidden.append(True)
+        try:
+            setattr(settings, 'FOST_AUTHN_GET_SECRET', get_secret)
+            with mock.patch('fost_authn.authentication._forbid', clock_skew_error):
+                self.headers['HTTP_X_FOST_TIMESTAMP'] = str(datetime.utcnow())
+                self.ua.get('/debug/', **self.headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertTrue(secret_fetched)
+        self.assertFalse(forbidden)
