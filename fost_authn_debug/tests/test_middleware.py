@@ -1,14 +1,8 @@
 from unittest2 import TestCase
 import mock
+from mock_request import MockRequest
 
 from fost_authn import Middleware
-
-
-class _Mockrequest(object):
-    def __init__(self, authz):
-        self.META = {}
-        if authz:
-            self.META['HTTP_AUTHORIZATION'] = authz
 
 
 class AuthorizationParser(TestCase):
@@ -16,12 +10,12 @@ class AuthorizationParser(TestCase):
         self.m = Middleware()
 
     def test_no_authorization_header(self):
-        r = _Mockrequest(None)
+        r = MockRequest(None)
         u = self.m.get_mechanism(r)
         self.assertEquals(u, [None, None])
 
     def test_with_authorization_header(self):
-        r = _Mockrequest('BASIC user:pass')
+        r = MockRequest('BASIC user:pass')
         u = self.m.get_mechanism(r)
         self.assertEquals(u, ['BASIC', 'user:pass'])
 
@@ -39,7 +33,7 @@ class InvalidHeader(TestCase):
         self.m = Middleware()
 
     def _do_test(self, header, gets_user=False):
-        self.request = _Mockrequest(header)
+        self.request = MockRequest(header)
         u = self.m.process_request(self.request)
         self.assertEquals(hasattr(self.request, 'user'), gets_user)
 
