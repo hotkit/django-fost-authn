@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import logging
 
 
 def sha1_hmac(secret, document):
@@ -20,4 +21,6 @@ def fost_hmac_signature(secret, method, path, timestamp, headers = {}, body = ''
     document = "%s %s\n%s\n%s\n%s" % (method, path, timestamp,
         '\n'.join([signed_headers] + header_values), body)
     signature = sha1_hmac(secret, document)
+    logging.info("Calculated signature %s for headers %s and document\n%s",
+        signature, headers, document)
     return document, signature, headers
