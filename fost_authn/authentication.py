@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 
-from fost_authn.signature import fost_hmac_signature
+from fost_authn.signature import fost_hmac_signature_with_headers
 
 
 def _forbid(error):
@@ -42,14 +42,17 @@ class FostBackend(object):
                 for header in request.META['HTTP_X_FOST_HEADERS'].split():
                     name = 'HTTP_%s' % header.upper().replace('-', '_')
                     signed_headers.append(request.META[name])
-                document = '%s %s\n%s\n%s\n%s' % (
+                document, signature, headers = \
+                    fost_hmac_signature_with_headers(secret,
                         request.method, request.path,
                         request.META['HTTP_X_FOST_TIMESTAMP'],
-                        '\n'.join(signed_headers),
+                        signed_headers,
                         request.raw_post_data)
-                logging.info("Document we're signing is:\n", document)
-                # TODO Check the rest of the signature and get the actual user
-                return self.get_user(0)
+                if signature == hmac:
+                    # TODO Check the rest of the signature and get the actual user
+                    return self.get_user(0)
+                else:
+                    return _forbid("Signature didn't match provided hmac")
             else:
                 return _forbid("Clock skew too high")
         else:

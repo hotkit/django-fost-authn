@@ -92,17 +92,18 @@ class TestFakeHTTPClientMissigned(TestCase):
         def get_secret(request, key):
             secret_fetched.append(True)
             return 'secret-value'
-        def clock_skew_error(error):
+        def forbid(error):
+            self.assertEquals(error, "Signature didn't match provided hmac")
             forbidden.append(True)
         try:
             settings.FOST_AUTHN_GET_SECRET = get_secret
-            with mock.patch('fost_authn.authentication._forbid', clock_skew_error):
+            with mock.patch('fost_authn.authentication._forbid', forbid):
                 self.headers['HTTP_X_FOST_TIMESTAMP'] = str(datetime.utcnow())
                 self.ua.get('/debug/', **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertTrue(secret_fetched)
-        self.assertFalse(forbidden)
+        self.assertTrue(forbidden)
 
 
 class TestSignedRequests(TestCase):
