@@ -5,9 +5,13 @@ import mock
 from django.conf import settings
 from django.test.client import Client
 
+from fost_authn.signature import fost_hmac_signature
+
 
 class TestFakeHTTPClientUnsigned(TestCase):
-    """Tests that don't even try to sign the client requests."""
+    """
+        Tests that don't even try to sign the client requests.
+    """
 
     def setUp(self):
         self.ua = Client()
@@ -32,7 +36,9 @@ class TestFakeHTTPClientUnsigned(TestCase):
 
 
 class TestFakeHTTPClientMissigned(TestCase):
-    """ These tests sign the client requests, but not in a valid way."""
+    """
+        These tests sign the client requests, but not in a valid way.
+    """
 
     def setUp(self):
         self.ua = Client()
@@ -95,3 +101,23 @@ class TestFakeHTTPClientMissigned(TestCase):
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertTrue(secret_fetched)
         self.assertFalse(forbidden)
+
+
+class TestSignedRequests(TestCase):
+    """
+        Make sure that the requests that are properly signed work as they should.
+    """
+    def setUp(self):
+        self.ua = Client()
+
+
+    def test_get_root_signed(self):
+        now = datetime.utcnow()
+        url = '/debug/signed/'
+        signature, document, _ = \
+            fost_hmac_signature('secret-value', 'GET', url, now)
+        headers = dict(HTTP_X_FOST_TIMESTAMP = now,
+            HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
+            HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
+        response = self.ua.get(url, headers = headers)
+        self.assertEquals(response.status_code, 200)

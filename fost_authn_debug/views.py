@@ -9,3 +9,8 @@ def root(request):
 def anonymous(request):
     assert not request.user.is_authenticated()
     return render_to_response('ok.html')
+
+
+def signed(request):
+    assert request.user.is_authenticated()
+    return render_to_response('ok.html')
