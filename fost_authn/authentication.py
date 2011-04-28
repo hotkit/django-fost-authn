@@ -24,6 +24,8 @@ class FostBackend(object):
                 return _forbid("No HTTP_X_FOST_TIMESTAMP was found")
             secret = settings.FOST_AUTHN_GET_SECRET(request, key)
             logging.info("Found secret %s for key %s", secret, key)
+            logging.info("About to parse time stamp from %s",
+                request.META['HTTP_X_FOST_TIMESTAMP'][:19])
             signed_time = datetime.strptime(
                 request.META['HTTP_X_FOST_TIMESTAMP'][:19], '%Y-%m-%d %H:%M:%S')
             utc_now = datetime.utcnow()
@@ -40,6 +42,8 @@ class FostBackend(object):
                 return self.get_user(0)
             else:
                 return _forbid("Clock skew too high")
+        else:
+            _forbid("Not FOST signed")
 
     def get_user(self, user_id):
         # TODO This is not the correct implementation

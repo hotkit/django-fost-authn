@@ -4,6 +4,7 @@ import mock
 
 from django.conf import settings
 from django.test.client import Client
+from django.contrib.auth.models import User
 
 from fost_authn.signature import fost_hmac_signature
 
@@ -93,7 +94,7 @@ class TestFakeHTTPClientMissigned(TestCase):
         def clock_skew_error(error):
             forbidden.append(True)
         try:
-            setattr(settings, 'FOST_AUTHN_GET_SECRET', get_secret)
+            settings.FOST_AUTHN_GET_SECRET = get_secret
             with mock.patch('fost_authn.authentication._forbid', clock_skew_error):
                 self.headers['HTTP_X_FOST_TIMESTAMP'] = str(datetime.utcnow())
                 self.ua.get('/debug/', **self.headers)
@@ -109,15 +110,26 @@ class TestSignedRequests(TestCase):
     """
     def setUp(self):
         self.ua = Client()
+        self.user = User().save()
 
 
     def test_get_root_signed(self):
-        now = datetime.utcnow()
+        now = str(datetime.utcnow())
         url = '/debug/signed/'
-        signature, document, _ = \
-            fost_hmac_signature('secret-value', 'GET', url, now)
+        secret = 'secret-value'
+        document, signature, _ = \
+            fost_hmac_signature(secret, 'GET', url, now)
         headers = dict(HTTP_X_FOST_TIMESTAMP = now,
             HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
             HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
-        response = self.ua.get(url, headers = headers)
+        def get_secret(request, key):
+            return secret
+        def forbid(error):
+            self.fail(error)
+        try:
+            settings.FOST_AUTHN_GET_SECRET = get_secret
+            with mock.patch('fost_authn.authentication._forbid', forbid):
+                response = self.ua.get(url, **headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.status_code, 200)
