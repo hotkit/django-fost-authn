@@ -112,26 +112,43 @@ class TestSignedRequests(TestCase):
     """
     def setUp(self):
         self.ua = Client()
-        self.user = User().save()
+        self.user, created = User.objects.get_or_create(username='test-user')
+        self.now = str(datetime.utcnow())
+        self.url = '/debug/signed/'
+        self.secret = 'secret-value'
 
+    def get_secret(self, request, key):
+        return self.secret
+
+    def forbid(error):
+        self.fail(error)
 
     def test_get_root_signed(self):
-        now = str(datetime.utcnow())
-        url = '/debug/signed/'
-        secret = 'secret-value'
         document, signature, _ = \
-            fost_hmac_signature(secret, 'GET', url, now)
-        headers = dict(HTTP_X_FOST_TIMESTAMP = now,
+            fost_hmac_signature(self.secret, 'GET', self.url, self.now)
+        headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
             HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
             HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
-        def get_secret(request, key):
-            return secret
-        def forbid(error):
-            self.fail(error)
         try:
-            settings.FOST_AUTHN_GET_SECRET = get_secret
-            with mock.patch('fost_authn.authentication._forbid', forbid):
-                response = self.ua.get(url, **headers)
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            with mock.patch('fost_authn.authentication._forbid', self.forbid):
+                response = self.ua.get(self.url, **headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertEquals(response.status_code, 200)
+
+    def test_get_root_signed_with_user_header(self):
+        document, signature, _ = \
+            fost_hmac_signature(self.secret, 'GET', self.url, self.now, headers = {
+                'X-FOST-User': self.user.username})
+        headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
+            HTTP_X_FOST_HEADERS = 'X-FOST-Headers X-FOST-User',
+            HTTP_X_FOST_USER = self.user.username,
+            HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            with mock.patch('fost_authn.authentication._forbid', self.forbid):
+                response = self.ua.get(self.url, **headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.status_code, 200)
