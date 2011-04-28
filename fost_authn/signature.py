@@ -18,9 +18,21 @@ def fost_hmac_signature(secret, method, path, timestamp, headers = {}, body = ''
     for header, value in headers.items():
         signed_headers += ' ' + header
         header_values.append(value)
-    document = "%s %s\n%s\n%s\n%s" % (method, path, timestamp,
-        '\n'.join([signed_headers] + header_values), body)
+    return fost_hmac_signature_with_headers(secret, method, path, timestamp,
+        [signed_headers] + header_values, body)
+
+
+def fost_hmac_signature_with_headers(secret, method, path, timestamp, headers, body):
+    """
+        Calculate the signature for the given secret and other arguments.
+
+        The headers must be the correct header value list in the proper order.
+    """
+    document = "%s %s\n%s\n%s\n%s" % (
+        method, path,
+        timestamp,
+        '\n'.join(headers),
+        body)
     signature = sha1_hmac(secret, document)
-    logging.info("Calculated signature %s for headers %s and document\n%s",
-        signature, headers, document)
+    logging.info("Calculated signature %s for document\n%s", signature, document)
     return document, signature, headers
