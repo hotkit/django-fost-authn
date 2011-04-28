@@ -45,7 +45,8 @@ class TestFakeHTTPClientMissigned(TestCase):
         self.ua = Client()
         self.headers = dict(
             HTTP_AUTHORIZATION='FOST key:hmac',
-            HTTP_X_FOST_TIMESTAMP='2011-04-27 11:10:00')
+            HTTP_X_FOST_TIMESTAMP='2011-04-27 11:10:00',
+            HTTP_X_FOST_HEADERS = 'X-FOST-Headers')
 
     def test_get_root_ensure_sleep(self):
         slept = []

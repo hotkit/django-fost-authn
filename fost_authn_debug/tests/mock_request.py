@@ -5,7 +5,7 @@ from fost_authn.signature import fost_hmac_signature
 
 class MockRequest(object):
     def __init__(self, authz = None, method = 'GET', path = '/', body = ''):
-        self.method, self.path, self.body = method, path, body
+        self.method, self.path, self.raw_post_data = method, path, body
         self.META = {}
         if authz:
             self.META['HTTP_AUTHORIZATION'] = authz
@@ -18,5 +18,5 @@ class MockRequest(object):
         to_sign = {}
         document, signature, headers = \
             fost_hmac_signature(secret, self.method, self.path,
-                self.META['HTTP_X_FOST_TIMESTAMP'], to_sign, self.body)
+                self.META['HTTP_X_FOST_TIMESTAMP'], to_sign, self.raw_post_data)
         self.META['HTTP_AUTHORIZATION'] = 'FOST %s:%s' % (key, signature)

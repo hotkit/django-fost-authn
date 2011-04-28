@@ -38,6 +38,16 @@ class FostBackend(object):
                 skew, signed_time, utc_now, delta,
                 "skew is too high" if skew > delta else "skew is ok")
             if skew < delta:
+                signed_headers = []
+                for header in request.META['HTTP_X_FOST_HEADERS'].split():
+                    name = 'HTTP_%s' % header.upper().replace('-', '_')
+                    signed_headers.append(request.META[name])
+                document = '%s %s\n%s\n%s\n%s' % (
+                        request.method, request.path,
+                        request.META['HTTP_X_FOST_TIMESTAMP'],
+                        '\n'.join(signed_headers),
+                        request.raw_post_data)
+                logging.info("Document we're signing is:\n", document)
                 # TODO Check the rest of the signature and get the actual user
                 return self.get_user(0)
             else:
