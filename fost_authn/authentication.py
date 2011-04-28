@@ -36,9 +36,13 @@ class FostBackend(object):
                 skew, signed_time, utc_now, delta,
                 "skew is too high" if skew > delta else "skew is ok")
             if skew < delta:
-                return None
+                # TODO Check the rest of the signature and get the actual user
+                return self.get_user(0)
             else:
                 return _forbid("Clock skew too high")
 
     def get_user(self, user_id):
-        pass
+        # TODO This is not the correct implementation
+        from django.contrib.auth.models import User
+        if User.objects.all().count():
+            return User.objects.all()[user_id]
