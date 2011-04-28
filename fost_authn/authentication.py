@@ -7,7 +7,8 @@ from django.conf import settings
 from fost_authn.signature import fost_hmac_signature
 
 
-def _forbid(error = None):
+def _forbid(error):
+    logging.info(error)
     time.sleep(getattr(settings, 'FOST_AUTHN_MISSIGNED_SLEEP_TIME', 0.5))
 
 
@@ -18,11 +19,9 @@ class FostBackend(object):
             key = kwargs['key']
             hmac = kwargs['hmac']
             if not hasattr(settings, 'FOST_AUTHN_GET_SECRET'):
-                logging.error("FOST_AUTHN_GET_SECRET is not defined")
-                return _forbid()
+                return _forbid("FOST_AUTHN_GET_SECRET is not defined")
             elif not request.META.has_key('HTTP_X_FOST_TIMESTAMP'):
-                logging.info("No HTTP_X_FOST_TIMESTAMP was found")
-                return _forbid()
+                return _forbid("No HTTP_X_FOST_TIMESTAMP was found")
             secret = settings.FOST_AUTHN_GET_SECRET(request, key)
             logging.info("Found secret %s for key %s", secret, key)
             signed_time = datetime.strptime(
