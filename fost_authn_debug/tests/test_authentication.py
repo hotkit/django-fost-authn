@@ -31,7 +31,7 @@ class TestAuthentication(TestCase):
     def test_signed_request_missing_timestamp_header(self):
         del self.request.META['HTTP_X_FOST_TIMESTAMP']
         forbidden = []
-        def forbid():
+        def forbid(error):
             forbidden.append(True)
         with mock.patch('fost_authn.authentication._forbid', forbid):
             result = self.backend.authenticate(request = self.request,
