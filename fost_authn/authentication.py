@@ -46,7 +46,7 @@ class FostBackend(object):
                     value = request.META[name]
                     signed[header] = value
                     signed_headers.append(value)
-                document, signature, headers = \
+                document, signature = \
                     fost_hmac_signature_with_headers(secret,
                         request.method, request.path,
                         request.META['HTTP_X_FOST_TIMESTAMP'],

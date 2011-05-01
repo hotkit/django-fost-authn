@@ -52,6 +52,17 @@ FOST_AUTHN_MAXIMUM_CLOCK_SKEW
 The maximum allowed difference between the time when the request was signed and the time on the server. Defaults to 300 seconds.
 
 
+# Signing requests #
+
+In order to authenticate against the back end requests must be properly signed. `fost_auth.signature' includes two functions for doing this that can be used.
+
+## `fost_hmac_signature(secret, method, path, timestamp, headers = {}, body = '')` ##
+
+The headers are in the form of a dict giving the header name and values. The function returns both the signature and the document that was signed.
+
+It is the responsibility of the caller to correctly place the header values into the request object that is to be used, including the `Authorization` header.
+
+
 # Running tests #
 
 For best results create a virtualenv, then initialise it with test.pip.:

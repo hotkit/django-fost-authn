@@ -124,7 +124,7 @@ class TestSignedRequests(TestCase):
         self.fail(error)
 
     def test_get_root_signed(self):
-        document, signature, _ = \
+        document, signature = \
             fost_hmac_signature(self.secret, 'GET', self.url, self.now)
         headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
             HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
@@ -138,7 +138,7 @@ class TestSignedRequests(TestCase):
         self.assertEquals(response.status_code, 200)
 
     def test_get_root_signed_with_user_header(self):
-        document, signature, _ = \
+        document, signature = \
             fost_hmac_signature(self.secret, 'GET', self.url, self.now, headers = {
                 'X-FOST-User': self.user.username})
         headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,

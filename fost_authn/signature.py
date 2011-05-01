@@ -35,4 +35,4 @@ def fost_hmac_signature_with_headers(secret, method, path, timestamp, headers, b
         body)
     signature = sha1_hmac(secret, document)
     logging.info("Calculated signature %s for document\n%s", signature, document)
-    return document, signature, headers
+    return document, signature
