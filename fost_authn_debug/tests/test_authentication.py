@@ -10,9 +10,9 @@ from mock_request import MockRequest
 from fost_authn import FostBackend, Middleware
 
 
-class TestAuthentication(TestCase):
+class _TestBase(TestCase):
     """
-        Unit tests for the FostBackend itself.
+        Base class for handling some common test set up.
     """
     def setUp(self):
         self.middleware = Middleware()
@@ -27,12 +27,21 @@ class TestAuthentication(TestCase):
         return 'secret-value'
 
 
+    
+class TestAuthentication(_TestBase):
+    """
+        Unit tests for the FostBackend itself.
+    """
+    def setUp(self):
+        super(TestAuthentication, self).setUp()
+        self.request.sign(self.key, self.secret())
+        key, self.hmac = self.middleware.key_hmac(self.request)
+
+
     def test_signed_request_missing_timestamp_header(self):
         forbidden = []
         def forbid(error):
             forbidden.append(True)
-        self.request.sign(self.key, self.secret())
-        key, self.hmac = self.middleware.key_hmac(self.request)
         del self.request.META['HTTP_X_FOST_TIMESTAMP']
         with mock.patch('fost_authn.authentication._forbid', forbid):
             result = self.backend.authenticate(request = self.request,
@@ -42,8 +51,6 @@ class TestAuthentication(TestCase):
 
 
     def test_signed_request(self):
-        self.request.sign(self.key, self.secret())
-        key, self.hmac = self.middleware.key_hmac(self.request)
         with mock.patch('fost_authn.authentication._forbid', self.fail):
             result = self.backend.authenticate(request = self.request,
                 key = self.key, hmac = self.hmac)
@@ -52,6 +59,7 @@ class TestAuthentication(TestCase):
             self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
 
 
+class TestSigned(_TestBase):
     def test_signed_request(self):
         user, created = User.objects.get_or_create(username='test-user')
         headers = {'X-FOST-User': user.username}
