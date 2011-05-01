@@ -36,6 +36,11 @@ Finding a secret from an API key is done by giving a function to the FOST_AUTHN_
         return api_keys.objects.get(key=key).secret
 
 
+## Changes to existing Django classes ##
+
+After installing the authentication middleware the Django HttpRequest object is augmented with a new member, SIGNED, which is a `dict` holding the signed request header members. If the request has not been properly signed this `dict` will be empty.
+
+
 ## Optional settings ##
 
 FOST_AUTHN_MISSIGNED_SLEEP_TIME

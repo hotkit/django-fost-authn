@@ -5,6 +5,16 @@ from mock_request import MockRequest
 from fost_authn import Middleware
 
 
+class RequestHandling(TestCase):
+    def setUp(self):
+        self.m = Middleware()
+
+    def test_signed_headers(self):
+        request = MockRequest()
+        self.m.process_request(request)
+        self.assertTrue(hasattr(request, 'SIGNED'))
+
+
 class AuthorizationParser(TestCase):
     def setUp(self):
         self.m = Middleware()

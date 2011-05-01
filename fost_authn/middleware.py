@@ -27,6 +27,7 @@ class Middleware:
         return None, None
 
     def process_request(self, request):
+        request.SIGNED = {}
         key, hmac = self.key_hmac(request)
         if key and hmac:
             user = django.contrib.auth.authenticate(
