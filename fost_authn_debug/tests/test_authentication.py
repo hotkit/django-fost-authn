@@ -18,8 +18,6 @@ class TestAuthentication(TestCase):
         self.backend = FostBackend()
         self.request = MockRequest()
         self.key = 'key-value'
-        self.request.sign(self.key, self.secret())
-        key, self.hmac = self.middleware.key_hmac(self.request)
         settings.FOST_AUTHN_GET_SECRET = self.secret
     def tearDown(self):
         delattr(settings, 'FOST_AUTHN_GET_SECRET')
@@ -29,10 +27,12 @@ class TestAuthentication(TestCase):
 
 
     def test_signed_request_missing_timestamp_header(self):
-        del self.request.META['HTTP_X_FOST_TIMESTAMP']
         forbidden = []
         def forbid(error):
             forbidden.append(True)
+        self.request.sign(self.key, self.secret())
+        key, self.hmac = self.middleware.key_hmac(self.request)
+        del self.request.META['HTTP_X_FOST_TIMESTAMP']
         with mock.patch('fost_authn.authentication._forbid', forbid):
             result = self.backend.authenticate(request = self.request,
                     key = self.key, hmac = self.hmac)
@@ -41,6 +41,8 @@ class TestAuthentication(TestCase):
 
 
     def test_signed_request(self):
+        self.request.sign(self.key, self.secret())
+        key, self.hmac = self.middleware.key_hmac(self.request)
         with mock.patch('fost_authn.authentication._forbid', self.fail):
             result = self.backend.authenticate(request = self.request,
                 key = self.key, hmac = self.hmac)
