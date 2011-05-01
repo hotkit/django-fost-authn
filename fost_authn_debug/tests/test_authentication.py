@@ -60,8 +60,16 @@ class TestAuthentication(_TestBase):
 
 
 class TestSigned(_TestBase):
+    """
+        Perform various tests on the signed headers
+    """
+    def add_users(self, *users):
+        for user in users:
+            u, c = User.objects.get_or_create(username='test-user')
+        return u
+
     def test_signed_request(self):
-        user, created = User.objects.get_or_create(username='test-user')
+        user = self.add_users('test-user')
         headers = {'X-FOST-User': user.username}
         self.request.sign(self.key, self.secret(), headers)
         key, self.hmac = self.middleware.key_hmac(self.request)
@@ -71,3 +79,5 @@ class TestSigned(_TestBase):
         self.assertTrue(hasattr(self.request, 'SIGNED'))
         for key in ['X-FOST-Headers', 'X-FOST-User']:
             self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
+        self.assertEquals(result, user)
+
