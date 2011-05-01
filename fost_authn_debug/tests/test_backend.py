@@ -12,4 +12,4 @@ class BackendTests(TestCase):
         self.backend.authenticate()
 
     def test_get_user_no_user(self):
-        self.backend.get_user(0)
+        self.backend.get_user(None)

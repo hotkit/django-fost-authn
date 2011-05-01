@@ -34,6 +34,7 @@ class TestAuthentication(_TestBase):
     """
     def setUp(self):
         super(TestAuthentication, self).setUp()
+        u, c = User.objects.get_or_create(username='test-user')
         self.request.sign(self.key, self.secret())
         key, self.hmac = self.middleware.key_hmac(self.request)
 
@@ -65,11 +66,11 @@ class TestSigned(_TestBase):
     """
     def add_users(self, *users):
         for user in users:
-            u, c = User.objects.get_or_create(username='test-user')
+            u, c = User.objects.get_or_create(username=user)
         return u
 
     def test_signed_request(self):
-        user = self.add_users('test-user')
+        user = self.add_users('test-user1', 'test-user2')
         headers = {'X-FOST-User': user.username}
         self.request.sign(self.key, self.secret(), headers)
         key, self.hmac = self.middleware.key_hmac(self.request)

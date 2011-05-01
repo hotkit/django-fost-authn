@@ -3,6 +3,7 @@ import time
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from fost_authn.signature import fost_hmac_signature_with_headers
 
@@ -53,8 +54,10 @@ class FostBackend(object):
                         request.raw_post_data)
                 if signature == hmac:
                     request.SIGNED = signed
-                    # TODO Check the rest of the signature and get the actual user
-                    return self.get_user(0)
+                    if request.SIGNED.has_key('X-FOST-User'):
+                        return self.get_user(request.SIGNED['X-FOST-User'])
+                    else:
+                        return self.get_user(1)
                 else:
                     return _forbid("Signature didn't match provided hmac")
             else:
@@ -63,7 +66,9 @@ class FostBackend(object):
             _forbid("Not FOST signed")
 
     def get_user(self, user_id):
-        # TODO This is not the correct implementation
-        from django.contrib.auth.models import User
-        if User.objects.all().count():
-            return User.objects.all()[user_id]
+        if user_id:
+            if type(user_id) == str or type(user_id) == unicode:
+                return User.objects.get(username=user_id)
+            else:
+                return User.objects.get(pk=user_id)
+
