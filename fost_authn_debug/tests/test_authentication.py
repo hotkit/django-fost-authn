@@ -37,8 +37,14 @@ class TestAuthentication(TestCase):
             result = self.backend.authenticate(request = self.request,
                     key = self.key, hmac = self.hmac)
         self.assertTrue(forbidden)
+        self.assertEquals(self.request.SIGNED, {})
+
 
     def test_signed_request(self):
         with mock.patch('fost_authn.authentication._forbid', self.fail):
             result = self.backend.authenticate(request = self.request,
                 key = self.key, hmac = self.hmac)
+        self.assertTrue(hasattr(self.request, 'SIGNED'))
+        for key in ['X-FOST-Headers']:
+            self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
+

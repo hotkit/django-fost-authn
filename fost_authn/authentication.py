@@ -18,6 +18,7 @@ class FostBackend(object):
             request = kwargs['request']
             key = kwargs['key']
             hmac = kwargs['hmac']
+            request.SIGNED = {}
             if not hasattr(settings, 'FOST_AUTHN_GET_SECRET'):
                 return _forbid("FOST_AUTHN_GET_SECRET is not defined")
             elif not request.META.has_key('HTTP_X_FOST_TIMESTAMP'):
@@ -38,10 +39,12 @@ class FostBackend(object):
                 skew, signed_time, utc_now, delta,
                 "skew is too high" if skew > delta else "skew is ok")
             if skew < delta:
-                signed_headers = []
+                signed_headers, signed = [], {}
                 for header in request.META['HTTP_X_FOST_HEADERS'].split():
                     name = 'HTTP_%s' % header.upper().replace('-', '_')
-                    signed_headers.append(request.META[name])
+                    value = request.META[name]
+                    signed[header] = value
+                    signed_headers.append(value)
                 document, signature, headers = \
                     fost_hmac_signature_with_headers(secret,
                         request.method, request.path,
@@ -49,6 +52,7 @@ class FostBackend(object):
                         signed_headers,
                         request.raw_post_data)
                 if signature == hmac:
+                    request.SIGNED = signed
                     # TODO Check the rest of the signature and get the actual user
                     return self.get_user(0)
                 else:
