@@ -123,35 +123,29 @@ class TestSignedRequests(TestCase):
     def forbid(error):
         self.fail(error)
 
-    def test_get_root_signed(self):
+    def _root_signed(self, method, body_to_sign, *body_for_ua):
         document, signature = \
-            fost_hmac_signature(self.secret, 'GET', self.url, self.now)
+            fost_hmac_signature(self.secret, method.upper(), self.url, self.now,
+                body=body_to_sign)
         headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
             HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
             HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
         try:
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
             with mock.patch('fost_authn.authentication._forbid', self.forbid):
-                response = self.ua.get(self.url, **headers)
+                response = getattr(self.ua, method)(self.url, *body_for_ua, **headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.status_code, 200)
 
+    def test_get_root_signed(self):
+        self._root_signed('get', '', {})
+
     def test_post_root_signed(self):
-        body = '--BoUnDaRyStRiNg\r\nContent-Disposition: form-data; name="body"\r\n\r\n' \
-            'data\r\n--BoUnDaRyStRiNg--\r\n'
-        document, signature = \
-            fost_hmac_signature(self.secret, 'POST', self.url, self.now, body=body)
-        headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
-            HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
-            HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
-        try:
-            settings.FOST_AUTHN_GET_SECRET = self.get_secret
-            with mock.patch('fost_authn.authentication._forbid', self.forbid):
-                response = self.ua.post(self.url, {'body': 'data'}, **headers)
-        finally:
-            delattr(settings, 'FOST_AUTHN_GET_SECRET')
-        self.assertEquals(response.status_code, 200)
+        self._root_signed('post', '--BoUnDaRyStRiNg\r\n'
+            'Content-Disposition: form-data; name="body"\r\n\r\n'
+            'data\r\n--BoUnDaRyStRiNg--\r\n', {'body': 'data'})
+
 
     def test_get_root_signed_with_user_header(self):
         document, signature = \
