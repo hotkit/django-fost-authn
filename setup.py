@@ -12,7 +12,6 @@ setup(
     description = ("HTTP SHA1 HMAC authentication backend for Django"),
     license = "Boost Software License - Version 1.0 - August 17th, 2003",
     keywords = "django authentication hmac sha1 fost",
-    # url = "http://packages.python.org/an_example_pypi_project",
     packages=['fost_authn', 'fost_authn_debug'],
     long_description=read('README.markdown'),
     classifiers=[
