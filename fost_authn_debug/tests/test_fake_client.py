@@ -137,6 +137,22 @@ class TestSignedRequests(TestCase):
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.status_code, 200)
 
+    def test_post_root_signed(self):
+        body = '--BoUnDaRyStRiNg\r\nContent-Disposition: form-data; name="body"\r\n\r\n' \
+            'data\r\n--BoUnDaRyStRiNg--\r\n'
+        document, signature = \
+            fost_hmac_signature(self.secret, 'POST', self.url, self.now, body=body)
+        headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
+            HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
+            HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            with mock.patch('fost_authn.authentication._forbid', self.forbid):
+                response = self.ua.post(self.url, {'body': 'data'}, **headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertEquals(response.status_code, 200)
+
     def test_get_root_signed_with_user_header(self):
         document, signature = \
             fost_hmac_signature(self.secret, 'GET', self.url, self.now, headers = {
