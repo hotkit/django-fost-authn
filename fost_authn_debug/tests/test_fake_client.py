@@ -106,10 +106,7 @@ class TestFakeHTTPClientMissigned(TestCase):
         self.assertTrue(forbidden)
 
 
-class TestSignedRequests(TestCase):
-    """
-        Make sure that the requests that are properly signed work as they should.
-    """
+class _Signed(TestCase):
     def setUp(self):
         self.ua = Client()
         user, created = User.objects.get_or_create(username='test-user1')
@@ -121,8 +118,11 @@ class TestSignedRequests(TestCase):
     def get_secret(self, request, key):
         return self.secret
 
-    def forbid(error):
-        self.fail(error)
+
+class TestSignedRequests(_Signed):
+    """
+        Make sure that the requests that are properly signed work as they should.
+    """
 
     def _root_signed(self, method, body_to_sign, *body_for_ua, **extra_heads):
         document, signature = \
@@ -136,7 +136,7 @@ class TestSignedRequests(TestCase):
             headers['HTTP_X_FOST_HEADERS'] += ' %s' % key
         try:
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
-            with mock.patch('fost_authn.authentication._forbid', self.forbid):
+            with mock.patch('fost_authn.authentication._forbid', self.fail):
                 response = getattr(self.ua, method)(self.url, *body_for_ua, **headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
