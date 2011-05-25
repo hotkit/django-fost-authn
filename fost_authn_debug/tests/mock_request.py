@@ -5,10 +5,11 @@ from fost_authn.signature import fost_hmac_request_signature
 
 class MockRequest(object):
     def __init__(self, authz = None, host = 'www.example.com',
-            method = 'GET', path = '/', body = ''):
+            method = 'GET', path = '/', query_string = '', body = ''):
         self.method, self.path, self.raw_post_data = method, path, body
         self.META = {}
         self.META['HTTP_HOST'] = host
+        self.META['QUERY_STRING'] = query_string
         self.GET = {}
         if authz:
             self.META['HTTP_AUTHORIZATION'] = authz
