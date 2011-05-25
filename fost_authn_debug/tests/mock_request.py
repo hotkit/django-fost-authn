@@ -26,3 +26,6 @@ class MockRequest(object):
             fost_hmac_request_signature(secret, self.method, self.path,
                 self.META['HTTP_X_FOST_TIMESTAMP'], headers, self.raw_post_data)
         self.META['HTTP_AUTHORIZATION'] = 'FOST %s:%s' % (key, signature)
+
+    def sign_url(self, key, secret):
+        pass
