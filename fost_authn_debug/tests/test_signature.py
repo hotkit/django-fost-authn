@@ -42,7 +42,7 @@ class TestSignature(TestCase):
     def test_signed_mock_request(self):
         request = MockRequest(method = 'GET', path = '/')
         request.META['HTTP_X_FOST_TIMESTAMP'] = '2011-04-27 03:26:37.625618'
-        request.sign('key-value', 'secret-value')
+        request.sign_request('key-value', 'secret-value')
         self.assertEqual(request.META['HTTP_AUTHORIZATION'],
             'FOST key-value:Ttq8K3g/jm7sOAVzCN+3k4FVAso=')
 
