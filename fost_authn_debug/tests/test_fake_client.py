@@ -6,7 +6,7 @@ from django.conf import settings
 from django.test.client import Client
 from django.contrib.auth.models import User
 
-from fost_authn.signature import fost_hmac_signature
+from fost_authn.signature import fost_hmac_request_signature
 
 
 class TestFakeHTTPClientUnsigned(TestCase):
@@ -125,9 +125,9 @@ class TestSignedRequests(_Signed):
     """
 
     def _root_signed(self, method, body_to_sign, *body_for_ua, **extra_heads):
-        document, signature = \
-            fost_hmac_signature(self.secret, method.upper(), self.url, self.now,
-                headers = extra_heads, body=body_to_sign)
+        document, signature = fost_hmac_request_signature(
+            self.secret, method.upper(), self.url, self.now,
+            headers = extra_heads, body=body_to_sign)
         headers = dict(HTTP_X_FOST_TIMESTAMP = self.now,
             HTTP_X_FOST_HEADERS = 'X-FOST-Headers',
             HTTP_AUTHORIZATION = 'FOST key-value:%s' % signature)

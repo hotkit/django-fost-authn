@@ -10,7 +10,8 @@ def sha1_hmac(secret, document):
     return hmac.new(secret, document, hashlib.sha1).digest().encode("base64")[:-1]
 
 
-def fost_hmac_signature(secret, method, path, timestamp, headers = {}, body = ''):
+def fost_hmac_request_signature(
+    secret, method, path, timestamp, headers = {}, body = ''):
     """
         Calculate the signature for the given secret and arguments.
     """
@@ -18,11 +19,13 @@ def fost_hmac_signature(secret, method, path, timestamp, headers = {}, body = ''
     for header, value in headers.items():
         signed_headers += ' ' + header
         header_values.append(value)
-    return fost_hmac_signature_with_headers(secret, method, path, timestamp,
+    return fost_hmac_request_signature_with_headers(
+        secret, method, path, timestamp,
         [signed_headers] + header_values, body)
 
 
-def fost_hmac_signature_with_headers(secret, method, path, timestamp, headers, body):
+def fost_hmac_request_signature_with_headers(
+    secret, method, path, timestamp, headers, body):
     """
         Calculate the signature for the given secret and other arguments.
 
