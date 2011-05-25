@@ -176,7 +176,33 @@ class TestMissignedURL(_Signed):
 
 
 class TestSignedURL(_Signed):
+    headers = dict(
+        HTTP_HOST='www.example.com',
+        QUERY_STRING='')
+
+    def test_document_without_querystring(self):
+        checked = []
+        def check_doc(secret, document):
+            checked.append(True)
+            self.assertEquals(secret, self.get_secret())
+            self.assertEquals(document, 'doc')
+            return 'signature'
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            with mock.patch('fost_authn.authentication._forbid', self.fail):
+                with mock.patch('fost_authn.signature.sha1_hmac', check_doc):
+                    self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                        _s='signature'), **self.headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertTrue(checked)
+
     def test_signed(self):
         # expiry set to a date in 2020
-        response = self.ua.get('%s?_k=%s&_e=1590379249&_s=signature' %
-            (self.url, self.user.username))
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                _s='signature'), **self.headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertEquals(response.content, self.user.username)
