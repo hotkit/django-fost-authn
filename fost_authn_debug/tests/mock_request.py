@@ -7,6 +7,7 @@ class MockRequest(object):
     def __init__(self, authz = None, method = 'GET', path = '/', body = ''):
         self.method, self.path, self.raw_post_data = method, path, body
         self.META = {}
+        self.GET = {}
         if authz:
             self.META['HTTP_AUTHORIZATION'] = authz
 
