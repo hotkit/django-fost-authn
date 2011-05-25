@@ -11,7 +11,7 @@ class MockRequest(object):
         if authz:
             self.META['HTTP_AUTHORIZATION'] = authz
 
-    def sign(self, key, secret, headers = {}):
+    def sign_request(self, key, secret, headers = {}):
         if not self.META.has_key('HTTP_X_FOST_TIMESTAMP'):
             self.META['HTTP_X_FOST_TIMESTAMP'] = str(datetime.utcnow())
         if not self.META.has_key('HTTP_X_FOST_HEADERS'):
