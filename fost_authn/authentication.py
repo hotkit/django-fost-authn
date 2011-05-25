@@ -32,6 +32,9 @@ def _forbid(error):
 
 
 def _url_signature(backend, request):
+    expires = datetime.utcfromtimestamp(long(request.GET['_e']))
+    if expires < datetime.utcnow():
+        return _forbid('This URL has already expired')
     return backend.get_user(request.GET['_k'])
 
 
