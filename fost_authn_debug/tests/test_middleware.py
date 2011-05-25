@@ -44,7 +44,7 @@ class InvalidHeader(TestCase):
 
     def _do_test(self, header, gets_user=False):
         self.request = MockRequest(header)
-        u = self.m.process_request(self.request)
+        self.m.process_request(self.request)
         self.assertEquals(hasattr(self.request, 'user'), gets_user)
 
     def test_no_authorization_header(self):
