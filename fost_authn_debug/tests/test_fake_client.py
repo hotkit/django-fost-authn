@@ -180,18 +180,27 @@ class TestSignedURL(_Signed):
 
     def test_document_without_querystring(self):
         checked = []
-        def check_doc(secret, document):
-            checked.append(True)
-            self.assertEquals(secret, self.secret)
-            self.assertEquals(document,
-                'www.example.com/debug/signed/?_s=signature&_e=1590379249&_k=test-user2\n'
-                '1590379249')
-            return 'signature'
+        def check_doc(with_e):
+            def check_fn(secret, document):
+                checked.append(True)
+                self.assertEquals(secret, self.secret)
+                if with_e:
+                    self.assertEquals(document,
+                        'www.example.com/debug/signed/?_s=signature&_e=1590379249&_k=test-user2\n'
+                        '1590379249')
+                else:
+                    self.assertEquals(document,
+                        'www.example.com/debug/signed/?_s=signature&_k=test-user2\n')
+                return 'signature'
+            return check_fn
         try:
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
             with mock.patch('fost_authn.authentication._forbid', self.fail):
-                with mock.patch('fost_authn.signature.sha1_hmac', check_doc):
+                with mock.patch('fost_authn.signature.sha1_hmac', check_doc(True)):
                     response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                        _s='signature'), **self.headers)
+                with mock.patch('fost_authn.signature.sha1_hmac', check_doc(False)):
+                    response = self.ua.get(self.url, dict(_k=self.user.username,
                         _s='signature'), **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
