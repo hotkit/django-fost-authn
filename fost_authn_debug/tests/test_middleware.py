@@ -72,6 +72,9 @@ class URLSigning(TestCase):
         self.request.GET['_s'] = 'signature'
         self.m = Middleware()
 
-    def test_incorrect(self):
-        u = self.m.process_request(self.request)
-        self.assertIsNone(u)
+    def test_incorrect_get(self):
+        def authenticate(**kwargs):
+            return True
+        with mock.patch('django.contrib.auth.authenticate', authenticate):
+            self.m.process_request(self.request)
+        self.assertTrue(getattr(self.request, 'user', None))

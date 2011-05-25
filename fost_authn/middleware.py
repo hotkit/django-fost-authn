@@ -29,13 +29,16 @@ class Middleware:
     def process_request(self, request):
         request.SIGNED = {}
         key, hmac = self.key_hmac(request)
+        user = None
         if key and hmac:
             user = django.contrib.auth.authenticate(
                 request = request, key = key, hmac = hmac)
-            if user:
-                request.user = user
         else:
             if (request.method == 'GET' or request.method == 'HEAD') and \
                     request.GET.has_key('_k') and request.GET.has_key('_e') and \
                     request.GET.has_key('_s'):
-                pass
+                user = django.contrib.auth.authenticate(
+                    request = request, key = request.GET.has_key('_k'),
+                    hmac = request.GET.has_key('_s'))
+        if user:
+            request.user = user
