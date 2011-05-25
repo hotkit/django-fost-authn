@@ -33,7 +33,6 @@ def _forbid(error):
 
 
 def _url_signature(backend, request):
-    logging.info("Going to check to see if the URL has been properly signed")
     expires = datetime.utcfromtimestamp(long(request.GET['_e']))
     now = datetime.utcnow()
     logging.info("URL expires at %s and server time is now %s", expires, now)
