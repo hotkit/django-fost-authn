@@ -38,7 +38,6 @@ class Middleware:
                     request.GET.has_key('_k') and request.GET.has_key('_e') and \
                     request.GET.has_key('_s'):
                 user = django.contrib.auth.authenticate(
-                    request = request, key = request.GET.has_key('_k'),
-                    hmac = request.GET.has_key('_s'))
+                    request = request)
         if user:
             request.user = user
