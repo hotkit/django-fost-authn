@@ -3,6 +3,9 @@
 
 An authentication back-end for Django implementing request signing using strong cryptography. It is based on the request signing mechanism implemented by Amazon for s3.
 
+Both requests and URLs can be signed. Request signing are used where the user agent itself is able to perform the signing (i.e. it knows the API key and secret). URL signing is used where a authentication needs to be delegated to a user agent not capable (or not trusted) to sign the request.
+
+
 # To use in a Django project #
 
 Add the git repository to your pip install file and then use:
