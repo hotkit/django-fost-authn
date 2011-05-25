@@ -161,3 +161,7 @@ class TestSignedRequests(_Signed):
                 'X-FOST-User': self.user.username})
         self.assertEquals(response.content, self.user.username)
 
+
+class TestSignedURL(_Signed):
+    def test_signed(self):
+        response = self.ua.get('%s?_k=%s&_e=123&_s=signature' % (self.url, self.user.username))
