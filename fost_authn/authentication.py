@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from fost_authn.signature import fost_hmac_signature_with_headers
+from fost_authn.signature import fost_hmac_request_signature_with_headers
 
 
 class FostBackend(object):
@@ -63,12 +63,12 @@ def _request_signature(backend, request, key, hmac):
             value = request.META[name]
             signed[header] = value
             signed_headers.append(value)
-        document, signature = \
-            fost_hmac_signature_with_headers(secret,
-                request.method, request.path,
-                request.META['HTTP_X_FOST_TIMESTAMP'],
-                signed_headers,
-                request.raw_post_data)
+        document, signature = fost_hmac_request_signature_with_headers(
+            secret,
+            request.method, request.path,
+            request.META['HTTP_X_FOST_TIMESTAMP'],
+            signed_headers,
+            request.raw_post_data)
         if signature == hmac:
             request.SIGNED = signed
             if request.SIGNED.has_key('X-FOST-User'):

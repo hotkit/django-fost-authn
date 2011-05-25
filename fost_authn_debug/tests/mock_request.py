@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fost_authn.signature import fost_hmac_signature
+from fost_authn.signature import fost_hmac_request_signature
 
 
 class MockRequest(object):
@@ -20,6 +20,6 @@ class MockRequest(object):
             self.META['HTTP_%s' % key.upper().replace('-', '_')] = value
             self.META['HTTP_X_FOST_HEADERS'] += ' %s' % key
         document, signature = \
-            fost_hmac_signature(secret, self.method, self.path,
+            fost_hmac_request_signature(secret, self.method, self.path,
                 self.META['HTTP_X_FOST_TIMESTAMP'], headers, self.raw_post_data)
         self.META['HTTP_AUTHORIZATION'] = 'FOST %s:%s' % (key, signature)
