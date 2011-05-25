@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from fost_authn.signature import fost_hmac_request_signature_with_headers
+from fost_authn.signature import fost_hmac_url_signature, \
+    fost_hmac_request_signature_with_headers
 
 
 class FostBackend(object):
@@ -32,10 +33,18 @@ def _forbid(error):
 
 
 def _url_signature(backend, request):
+    logging.info("Going to check to see if the URL has been properly signed")
     expires = datetime.utcfromtimestamp(long(request.GET['_e']))
-    if expires < datetime.utcnow():
+    now = datetime.utcnow()
+    logging.info("URL expires at %s and server time is now %s", expires, now)
+    if expires < now:
         return _forbid('This URL has already expired')
-    return backend.get_user(request.GET['_k'])
+    key = request.GET['_k']
+    secret = settings.FOST_AUTHN_GET_SECRET(request, key)
+    signature = fost_hmac_url_signature(key, secret,
+        request.META['HTTP_HOST'], request.path, request.META['QUERY_STRING'],
+        request.GET['_e'])
+    return backend.get_user(key)
 
 
 def _request_signature(backend, request, key, hmac):
