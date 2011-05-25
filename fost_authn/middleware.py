@@ -34,3 +34,8 @@ class Middleware:
                 request = request, key = key, hmac = hmac)
             if user:
                 request.user = user
+        else:
+            if (request.method == 'GET' or request.method == 'HEAD') and \
+                    request.GET.has_key('_k') and request.GET.has_key('_e') and \
+                    request.GET.has_key('_s'):
+                pass
