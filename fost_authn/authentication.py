@@ -32,7 +32,7 @@ def _forbid(error):
 
 
 def _url_signature(backend, request):
-    pass
+    return backend.get_user(request.GET['_k'])
 
 
 def _request_signature(backend, request, key, hmac):
