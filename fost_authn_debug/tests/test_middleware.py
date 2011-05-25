@@ -62,3 +62,16 @@ class InvalidHeader(TestCase):
         with mock.patch('django.contrib.auth.authenticate', authenticate):
             self._do_test('FOST key:secret', gets_user=True)
         self.assertTrue(self.request.user)
+
+
+class URLSigning(TestCase):
+    def setUp(self):
+        self.request = MockRequest()
+        self.request.GET['_k'] = 'key'
+        self.request.GET['_e'] = 'expires'
+        self.request.GET['_s'] = 'signature'
+        self.m = Middleware()
+
+    def test_incorrect(self):
+        u = self.m.process_request(self.request)
+        self.assertIsNone(u)
