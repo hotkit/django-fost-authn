@@ -10,6 +10,19 @@ def sha1_hmac(secret, document):
     return hmac.new(secret, document, hashlib.sha1).digest().encode("base64")[:-1]
 
 
+def fost_hmac_url_signature(
+    key, secret, host, path, query_string, expires):
+    """
+        Return a signature that corresponds to the signed URL.
+    """
+    if query_string:
+        document = '%s%s?%s\n%s' % (host, path, query_string, expires)
+    else:
+        document = '%s%s\n%s' % (host, path, expires)
+    signature = sha1_hmac(secret, document)
+    return signature
+
+
 def fost_hmac_request_signature(
     secret, method, path, timestamp, headers = {}, body = ''):
     """

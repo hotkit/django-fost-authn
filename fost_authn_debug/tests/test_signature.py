@@ -1,7 +1,29 @@
+import mock
 from unittest2 import TestCase
 from mock_request import MockRequest
 
-from fost_authn.signature import fost_hmac_request_signature, sha1_hmac
+from fost_authn.signature import fost_hmac_request_signature, \
+    fost_hmac_url_signature, sha1_hmac
+
+
+class TestURLSignature(TestCase):
+    def test_document_without_query_string(self):
+        def check_doc(secret, document):
+            self.assertEquals(secret, 'secret')
+            self.assertEquals(document,
+                'host.example.com/path/to/file.html\n12345')
+        with mock.patch('fost_authn.signature.sha1_hmac', check_doc):
+            fost_hmac_url_signature('key', 'secret',
+                'host.example.com', '/path/to/file.html', None, 12345)
+
+    def test_document_with_query_string(self):
+        def check_doc(secret, document):
+            self.assertEquals(secret, 'secret')
+            self.assertEquals(document,
+                'host.example.com/path/to/file.html?q=v&t=c\n12345')
+        with mock.patch('fost_authn.signature.sha1_hmac', check_doc):
+            fost_hmac_url_signature('key', 'secret',
+                'host.example.com', '/path/to/file.html', 'q=v&t=c', 12345)
 
 
 class TestSignature(TestCase):
