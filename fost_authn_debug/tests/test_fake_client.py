@@ -162,6 +162,21 @@ class TestSignedRequests(_Signed):
         self.assertEquals(response.content, self.user.username)
 
 
+class TestMissignedURL(_Signed):
+    def test_expired(self):
+        forbidden = []
+        def expired(error):
+            forbidden.append(True)
+            self.assertEqual(error, "This URL has already expired")
+        with mock.patch('fost_authn.authentication._forbid', expired):
+            with self.assertRaises(AssertionError):
+                self.ua.get('%s?_k=%s&_e=123&_s=signature' %
+                    (self.url, self.user.username))
+        self.assertTrue(forbidden)
+
+
 class TestSignedURL(_Signed):
     def test_signed(self):
-        response = self.ua.get('%s?_k=%s&_e=123&_s=signature' % (self.url, self.user.username))
+        # expiry set to a date in 2020
+        response = self.ua.get('%s?_k=%s&_e=1590379249&_s=signature' %
+            (self.url, self.user.username))
