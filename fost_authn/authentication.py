@@ -10,8 +10,11 @@ from fost_authn.signature import fost_hmac_signature_with_headers
 
 class FostBackend(object):
     def authenticate(self, **kwargs):
-        if kwargs.has_key('request') and kwargs.has_key('key') and kwargs.has_key('hmac'):
-            return _request_signature(self, **kwargs)
+        if kwargs.has_key('request'):
+            if kwargs.has_key('key') and kwargs.has_key('hmac'):
+                return _request_signature(self, **kwargs)
+            else:
+                return _url_signature(self, **kwargs)
         else:
             _forbid("Not FOST signed")
 
@@ -28,10 +31,11 @@ def _forbid(error):
     time.sleep(getattr(settings, 'FOST_AUTHN_MISSIGNED_SLEEP_TIME', 0.5))
 
 
-def _request_signature(backend, **kwargs):
-    request = kwargs['request']
-    key = kwargs['key']
-    hmac = kwargs['hmac']
+def _url_signature(backend, request):
+    pass
+
+
+def _request_signature(backend, request, key, hmac):
     request.SIGNED = {}
     if not hasattr(settings, 'FOST_AUTHN_GET_SECRET'):
         return _forbid("FOST_AUTHN_GET_SECRET is not defined")
