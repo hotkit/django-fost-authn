@@ -34,11 +34,6 @@ class Middleware:
             user = django.contrib.auth.authenticate(
                 request = request, key = key, hmac = hmac)
         else:
-            logging.info("method %s, _k %s, _e %s, _s %s\nGET %s\nPOST %s\nREQUEST %s",
-                request.method, request.GET.has_key('_k'), request.GET.has_key('_e'),
-                request.GET.has_key('_e'), request.GET.items(),
-                getattr(request, 'POST', {}).items(),
-                getattr(request, 'REQUEST', {}).items())
             if (request.method == 'GET' or request.method == 'HEAD') and \
                     request.GET.has_key('_k') and request.GET.has_key('_e') and \
                     request.GET.has_key('_s'):
