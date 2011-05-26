@@ -33,18 +33,21 @@ def _forbid(error):
 
 
 def _url_signature(backend, request):
-    expires = datetime.utcfromtimestamp(long(request.GET['_e']))
-    now = datetime.utcnow()
-    logging.info("URL expires at %s and server time is now %s", expires, now)
-    if expires < now:
-        return _forbid('This URL has already expired')
+    if request.GET.has_key('_e'):
+        _e = request.GET['_e']
+        expires = datetime.utcfromtimestamp(long(_e))
+        now = datetime.utcnow()
+        logging.info("URL expires at %s and server time is now %s", expires, now)
+        if expires < now:
+            return _forbid('This URL has already expired')
+    else:
+        _e = ''
     key = request.GET['_k']
     secret = settings.FOST_AUTHN_GET_SECRET(request, key)
     query = request.META['QUERY_STRING'].split('&')
     query = [q for q in query if not (q.startswith('_k=') or q.startswith('_e=') or q.startswith('_s'))]
     signature = fost_hmac_url_signature(key, secret,
-        request.META['HTTP_HOST'], request.path, '&'.join(query),
-        request.GET['_e'])
+        request.META['HTTP_HOST'], request.path, query, _e)
     return backend.get_user(key)
 
 
