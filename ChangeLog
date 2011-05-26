@@ -1,3 +1,6 @@
+2011-05-26  Kirit Saelensminde  <kirit@felspar.com>
+ - Added support for signed URLs used for GET and HEAD requests.
+
 2011-05-03  Kirit Saelensminde  <kirit@felspar.com>
  ChangeLog
  - Added ChangeLog
