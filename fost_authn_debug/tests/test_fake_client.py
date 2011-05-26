@@ -228,15 +228,24 @@ class TestMissignedURL(_Signed):
     headers = dict(HTTP_HOST='www.example.com')
     url = '/debug/anonymous/'
 
-    def test_with_expiry_in_future(self):
-        def check_forbid(reason):
-            self.assertEquals(reason, "Signatures didn't match")
+    def _check_reason(self, reason = "Signatures didn't match", **_e):
+        def check_forbid(error):
+            self.assertEquals(error, reason)
         try:
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
             with mock.patch('fost_authn.authentication._forbid', check_forbid):
                 # expiry set to a date in 2020
-                response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
-                            _s='signature'), **self.headers)
+                response = self.ua.get(self.url, dict(_k=self.user.username, _s='signature', **_e),
+                    **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.status_code, 200)
+
+    def test_with_expiry_in_future(self):
+        self._check_reason(_e='1590379249')
+
+    def test_without_expiry(self):
+        self._check_reason(_e='1590379249')
+
+    def test_with_expiry_in_the_past(self):
+        self._check_reason("This URL has already expired", _e="123")
