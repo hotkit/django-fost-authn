@@ -40,8 +40,10 @@ def _url_signature(backend, request):
         return _forbid('This URL has already expired')
     key = request.GET['_k']
     secret = settings.FOST_AUTHN_GET_SECRET(request, key)
+    query = request.META['QUERY_STRING'].split('&')
+    query = [q for q in query if not (q.startswith('_k=') or q.startswith('_e=') or q.startswith('_s'))]
     signature = fost_hmac_url_signature(key, secret,
-        request.META['HTTP_HOST'], request.path, request.META['QUERY_STRING'],
+        request.META['HTTP_HOST'], request.path, '&'.join(query),
         request.GET['_e'])
     return backend.get_user(key)
 

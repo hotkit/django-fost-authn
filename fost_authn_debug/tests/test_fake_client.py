@@ -184,8 +184,7 @@ class TestSignedURL(_Signed):
             checked.append(True)
             self.assertEquals(secret, self.secret)
             self.assertEquals(document,
-                'www.example.com/debug/signed/?_s=signature&_e=1590379249&_k=test-user2\n'
-                '1590379249')
+                'www.example.com/debug/signed/\n1590379249')
             return 'signature'
         try:
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
