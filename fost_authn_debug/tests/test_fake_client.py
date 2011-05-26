@@ -229,11 +229,14 @@ class TestMissignedURL(_Signed):
     url = '/debug/anonymous/'
 
     def test_with_expiry_in_future(self):
+        def check_forbid(reason):
+            self.assertEquals(reason, "Signatures didn't match")
         try:
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
-            # expiry set to a date in 2020
-            response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
-                        _s='signature'), **self.headers)
+            with mock.patch('fost_authn.authentication._forbid', check_forbid):
+                # expiry set to a date in 2020
+                response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                            _s='signature'), **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.status_code, 200)
