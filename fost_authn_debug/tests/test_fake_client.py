@@ -107,13 +107,14 @@ class TestFakeHTTPClientMissigned(TestCase):
 
 
 class _Signed(TestCase):
+    url = '/debug/signed/'
+    secret = 'secret-value'
+
     def setUp(self):
         self.ua = Client()
         user, created = User.objects.get_or_create(username='test-user1')
         self.user, created = User.objects.get_or_create(username='test-user2')
         self.now = str(datetime.utcnow())
-        self.url = '/debug/signed/'
-        self.secret = 'secret-value'
 
     def get_secret(self, request, key):
         return self.secret
@@ -217,7 +218,22 @@ class TestSignedURL(_Signed):
             settings.FOST_AUTHN_GET_SECRET = self.get_secret
             # expiry set to a date in 2020
             response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
-                        _s='signature'), **self.headers)
+                        _s='RGemZfy39Wshz+iQnHR2/0Rtfq8='), **self.headers)
         finally:
             delattr(settings, 'FOST_AUTHN_GET_SECRET')
         self.assertEquals(response.content, self.user.username)
+
+
+class TestMissignedURL(_Signed):
+    headers = dict(HTTP_HOST='www.example.com')
+    url = '/debug/anonymous/'
+
+    def test_with_expiry_in_future(self):
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            # expiry set to a date in 2020
+            response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                        _s='signature'), **self.headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertEquals(response.status_code, 200)

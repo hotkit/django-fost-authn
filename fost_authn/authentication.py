@@ -51,7 +51,10 @@ def _url_signature(backend, request):
         request.META['QUERY_STRING'], query)
     signature = fost_hmac_url_signature(key, secret,
         request.META['HTTP_HOST'], request.path, query, _e)
-    return backend.get_user(key)
+    if signature == request.GET['_s']:
+        return backend.get_user(key)
+    else:
+        return _forbid("Signatures didn't match")
 
 
 def _request_signature(backend, request, key, hmac):
