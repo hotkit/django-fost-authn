@@ -35,7 +35,7 @@ class TestAuthentication(_TestBase):
     def setUp(self):
         super(TestAuthentication, self).setUp()
         u, c = User.objects.get_or_create(username='test-user')
-        self.request.sign(self.key, self.secret())
+        self.request.sign_request(self.key, self.secret())
         key, self.hmac = self.middleware.key_hmac(self.request)
 
 
@@ -72,7 +72,7 @@ class TestSigned(_TestBase):
     def test_signed_request(self):
         user = self.add_users('test-user1', 'test-user2')
         headers = {'X-FOST-User': user.username}
-        self.request.sign(self.key, self.secret(), headers)
+        self.request.sign_request(self.key, self.secret(), headers)
         key, self.hmac = self.middleware.key_hmac(self.request)
         with mock.patch('fost_authn.authentication._forbid', self.fail):
             result = self.backend.authenticate(request = self.request,
