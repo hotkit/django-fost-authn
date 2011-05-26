@@ -206,6 +206,35 @@ class TestSignedURL(_Signed):
         self.assertTrue(checked)
         self.assertEquals(response.content, self.user.username)
 
+    def test_document_without_querystring(self):
+        checked = []
+        def check_doc(with_e):
+            def check_fn(secret, document):
+                checked.append(True)
+                self.assertEquals(secret, self.secret)
+                if with_e:
+                    self.assertEquals(document,
+                        'www.example.com/debug/signed/?query=string&hello=there\n1590379249')
+                else:
+                    self.assertEquals(document,
+                        'www.example.com/debug/signed/?query=string&hello=there\n')
+                return 'signature'
+            return check_fn
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            with mock.patch('fost_authn.authentication._forbid', self.fail):
+                with mock.patch('fost_authn.signature.sha1_hmac', check_doc(True)):
+                    response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                        _s='signature', query='string', hello='there'), **self.headers)
+                with mock.patch('fost_authn.signature.sha1_hmac', check_doc(False)):
+                    response = self.ua.get(self.url, dict(_k=self.user.username,
+                        _s='signature', query='string', hello='there'), **self.headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertTrue(checked)
+        self.assertEquals(response.content, self.user.username)
+
+
     #def test_signed(self):
         ## expiry set to a date in 2020
         #try:
