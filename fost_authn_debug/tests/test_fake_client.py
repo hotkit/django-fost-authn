@@ -208,17 +208,16 @@ class TestSignedURL(_Signed):
 
     def test_document_without_querystring(self):
         self._test_document()
-
     def test_document_with_querystring(self):
         self._test_document('?query=string&hello=there', query='string', hello='there')
 
 
-    #def test_signed(self):
-        ## expiry set to a date in 2020
-        #try:
-            #settings.FOST_AUTHN_GET_SECRET = self.get_secret
-            #response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
-                        #_s='signature'), **self.headers)
-        #finally:
-            #delattr(settings, 'FOST_AUTHN_GET_SECRET')
-        #self.assertEquals(response.content, self.user.username)
+    def test_signature_with_expiry(self):
+        try:
+            settings.FOST_AUTHN_GET_SECRET = self.get_secret
+            # expiry set to a date in 2020
+            response = self.ua.get(self.url, dict(_k=self.user.username, _e='1590379249',
+                        _s='signature'), **self.headers)
+        finally:
+            delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        self.assertEquals(response.content, self.user.username)
