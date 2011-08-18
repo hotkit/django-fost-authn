@@ -1,3 +1,6 @@
+2011-08-18  Kirit Saelensminde  <kirit@felspar.com>
+ Added a function fost_authn.signature.filter_query_string that can be used to remove the signature query string values from a supplied query string.
+
 2011-05-26  Kirit Saelensminde  <kirit@felspar.com>
  - Added support for signed URLs used for GET and HEAD requests.
 
