@@ -12,6 +12,15 @@ def sha1_hmac(secret, document):
     return signature
 
 
+def filter_query_string(query):
+    """
+        Return a version of the query string with the _e, _k and _s values
+        removed.
+    """
+    return '&'.join([q for q in query.split('&')
+        if not (q.startswith('_k=') or q.startswith('_e=') or q.startswith('_s'))])
+
+
 def fost_hmac_url_signature(
     key, secret, host, path, query_string, expires):
     """

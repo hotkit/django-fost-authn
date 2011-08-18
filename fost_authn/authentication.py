@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from fost_authn.signature import fost_hmac_url_signature, \
-    fost_hmac_request_signature_with_headers
+    fost_hmac_request_signature_with_headers, filter_query_string
 
 
 class FostBackend(object):
@@ -44,9 +44,7 @@ def _url_signature(backend, request):
         _e = ''
     key = request.GET['_k']
     secret = settings.FOST_AUTHN_GET_SECRET(request, key)
-    query = request.META['QUERY_STRING'].split('&')
-    query = '&'.join([q for q in query
-        if not (q.startswith('_k=') or q.startswith('_e=') or q.startswith('_s'))])
+    query = filter_query_string(request.META['QUERY_STRING'])
     logging.info("Query string %s changed to %s for signing",
         request.META['QUERY_STRING'], query)
     signature = fost_hmac_url_signature(key, secret,
