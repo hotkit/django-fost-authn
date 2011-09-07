@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "django_fost_authn",
-    version = "0.1.1",
+    version = "0.2.1",
     author = "Kirit Saelensminde",
     author_email = "kirit@felspar.com",
     description = ("HTTP SHA1 HMAC authentication backend for Django"),
