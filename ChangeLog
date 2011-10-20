@@ -1,3 +1,6 @@
+2011-10-20  Kirit Saelensminde  <kirit@felspar.com>
+ Fixed the setup.py so that it contains the correct Python project name.
+
 2011-08-18  Kirit Saelensminde  <kirit@felspar.com>
  Added a function fost_authn.signature.filter_query_string that can be used to remove the signature query string values from a supplied query string.
 
