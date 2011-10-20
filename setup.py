@@ -5,8 +5,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "django_fost_authn",
-    version = "0.2.1",
+    name = "django-fost-authn",
+    version = "0.2.1.1",
     author = "Kirit Saelensminde",
     author_email = "kirit@felspar.com",
     description = ("HTTP SHA1 HMAC authentication backend for Django"),
