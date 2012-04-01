@@ -25,10 +25,7 @@ class FostBackend(object):
 
     def get_user(self, user_id):
         if user_id:
-            if type(user_id) == str or type(user_id) == unicode:
-                return User.objects.get(username=user_id)
-            else:
-                return User.objects.get(pk=user_id)
+            return User.objects.get(username=user_id)
 
 
 def _forbid(error):
