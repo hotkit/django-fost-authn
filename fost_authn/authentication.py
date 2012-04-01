@@ -102,7 +102,7 @@ def _request_signature(backend, request, key, hmac):
             if request.SIGNED.has_key('X-FOST-User'):
                 return backend.get_user(request.SIGNED['X-FOST-User'])
             else:
-                return backend.get_user(1)
+                return backend.get_user(unquote(key))
         else:
             return _forbid("Signature didn't match provided hmac")
     else:

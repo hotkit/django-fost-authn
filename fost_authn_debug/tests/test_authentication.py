@@ -31,7 +31,7 @@ class _TestBaseWithGetSecret(_TestBase):
     """
     def setUp(self):
         super(_TestBaseWithGetSecret, self).setUp()
-        self.key = 'key-value'
+        self.key = self.add_users('key-value').username
         settings.FOST_AUTHN_GET_SECRET = self.secret
     def tearDown(self):
         delattr(settings, 'FOST_AUTHN_GET_SECRET')
@@ -100,3 +100,14 @@ class TestSignedWithUserKey(_TestBase):
             result = self.backend.authenticate(request = self.request,
                 key = self.key, hmac = self.hmac)
         self.assertTrue(hasattr(self.request, 'SIGNED'))
+        self.assertEqual(result, user)
+
+    def test_signed_request_with_odd_username(self):
+        user = self.add_users('test:user1')
+        self.request.sign_request(user.username, user.password.encode('utf-8'), {})
+        self.key, self.hmac = self.middleware.key_hmac(self.request)
+        with mock.patch('fost_authn.authentication._forbid', self.fail):
+            result = self.backend.authenticate(request = self.request,
+                key = self.key, hmac = self.hmac)
+        self.assertTrue(hasattr(self.request, 'SIGNED'))
+        self.assertEqual(result, user)
