@@ -18,17 +18,30 @@ class _TestBase(TestCase):
         self.middleware = Middleware()
         self.backend = FostBackend()
         self.request = MockRequest()
+
+    def add_users(self, *users):
+        for user in users:
+            u, c = User.objects.get_or_create(username=user)
+        return u
+
+
+class _TestBaseWithGetSecret(_TestBase):
+    """
+        Adds in the mechanism for determining the secret.
+    """
+    def setUp(self):
+        super(_TestBaseWithGetSecret, self).setUp()
         self.key = 'key-value'
         settings.FOST_AUTHN_GET_SECRET = self.secret
     def tearDown(self):
         delattr(settings, 'FOST_AUTHN_GET_SECRET')
+        super(_TestBaseWithGetSecret, self).tearDown()
 
     def secret(self, r = None, k = None):
         return 'secret-value'
 
 
-    
-class TestAuthentication(_TestBase):
+class TestAuthentication(_TestBaseWithGetSecret):
     """
         Unit tests for the FostBackend itself.
     """
@@ -60,15 +73,10 @@ class TestAuthentication(_TestBase):
             self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
 
 
-class TestSigned(_TestBase):
+class TestSigned(_TestBaseWithGetSecret):
     """
         Perform various tests on the signed headers
     """
-    def add_users(self, *users):
-        for user in users:
-            u, c = User.objects.get_or_create(username=user)
-        return u
-
     def test_signed_request(self):
         user = self.add_users('test-user1', 'test-user2')
         headers = {'X-FOST-User': user.username}
@@ -82,3 +90,13 @@ class TestSigned(_TestBase):
             self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
         self.assertEquals(result, user)
 
+
+class TestSignedWithUserKey(_TestBase):
+    def test_signed_request(self):
+        user = self.add_users('test-user1')
+        self.request.sign_request(user.username, user.password.encode('utf-8'), {})
+        self.key, self.hmac = self.middleware.key_hmac(self.request)
+        with mock.patch('fost_authn.authentication._forbid', self.fail):
+            result = self.backend.authenticate(request = self.request,
+                key = self.key, hmac = self.hmac)
+        self.assertTrue(hasattr(self.request, 'SIGNED'))
