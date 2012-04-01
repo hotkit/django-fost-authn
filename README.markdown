@@ -32,7 +32,9 @@ Unless you've already added a custom authentication backend your settings.py pro
 
 In order to be able to authenticate requests the authentication backend needs to know how to map API keys to secrets and to users.
 
-Finding a secret from an API key is done by giving a function to the FOST_AUTHN_GET_SECRET setting. If this is not configured then no requests can be authenticated. The following is an example of what can be put in the settings.py.
+Finding a secret from an API key is done by giving a function to the FOST_AUTHN_GET_SECRET setting. If this is not configured then the default implementation will use a SHA1 hash of the user's password field. This ensures that the secret will change even if the user changes their password to the same as it was due to the change in the salt stored in the field.
+
+The following is an example of what can be put in the settings.py.
 
     def FOST_AUTHN_GET_SECRET(request, key):
         from myapp.models import api_keys
