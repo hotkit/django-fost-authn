@@ -10,9 +10,10 @@ def read(fname1, fname2):
 
 setup(
     name = "django-fost-authn",
-    version = "0.3",
+    version = "0.3.0.1",
     author = "Kirit Saelensminde",
     author_email = "kirit@felspar.com",
+    url = 'https://github.com/Felspar/django-fost-authn',
     description = ("HTTP SHA1 HMAC authentication backend for Django"),
     license = "Boost Software License - Version 1.0 - August 17th, 2003",
     keywords = "django authentication hmac sha1 fost",
@@ -23,7 +24,7 @@ setup(
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "License :: OSI Approved :: Boost Software License - Version 1.0 - August 17th, 2003",
+        "License :: OSI Approved",
     ],
     packages=['fost_authn', 'fost_authn_debug'],
 )
