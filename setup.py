@@ -10,7 +10,7 @@ def read(fname1, fname2):
 
 setup(
     name = "django-fost-authn",
-    version = "0.3",
+    version = "0.3.0.1",
     author = "Kirit Saelensminde",
     author_email = "kirit@felspar.com",
     url = 'https://github.com/Felspar/django-fost-authn',
