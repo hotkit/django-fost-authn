@@ -71,7 +71,8 @@ def _request_signature(backend, request, key, hmac):
     logging.info("About to parse time stamp from %s",
         request.META['HTTP_X_FOST_TIMESTAMP'][:19])
     signed_time = datetime.strptime(
-        request.META['HTTP_X_FOST_TIMESTAMP'][:19], '%Y-%m-%d %H:%M:%S')
+        request.META['HTTP_X_FOST_TIMESTAMP'][:19].replace('T', ' '),
+        '%Y-%m-%d %H:%M:%S')
     utc_now = datetime.utcnow()
     delta = timedelta(0, getattr(settings,
         'FOST_AUTHN_MAXIMUM_CLOCK_SKEW', 300))
