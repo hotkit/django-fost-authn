@@ -1,3 +1,7 @@
+2012-04-02  Kirit Saelensminde  <kirit@felspar.com>
+ Use the key in the Authorization header to look up the user name.
+ Allow the timestamp to have an embedded 'T' as per the ISO standard.
+
 2011-10-20  Kirit Saelensminde  <kirit@felspar.com>
  Fixed the setup.py so that it contains the correct Python project name.
 
