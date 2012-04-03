@@ -61,7 +61,6 @@ class TestAuthentication(_TestBaseWithGetSecret):
             result = self.backend.authenticate(request = self.request,
                     key = self.key, hmac = self.hmac)
         self.assertTrue(forbidden)
-        self.assertEquals(self.request.SIGNED, {})
 
 
     def test_signed_request(self):
@@ -73,9 +72,21 @@ class TestAuthentication(_TestBaseWithGetSecret):
             self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
 
 
-    def test_signed_request(self):
+    def test_signed_request_with_iso_timestamp(self):
         now = self.request.META['HTTP_X_FOST_TIMESTAMP']
         self.request.META['HTTP_X_FOST_TIMESTAMP'] = now[:10] + 'T' + now[11:] + 'Z'
+        self.request.sign_request(self.key, self.secret())
+        key, self.hmac = self.middleware.key_hmac(self.request)
+        with mock.patch('fost_authn.authentication._forbid', self.fail):
+            result = self.backend.authenticate(request = self.request,
+                key = self.key, hmac = self.hmac)
+        self.assertTrue(hasattr(self.request, 'SIGNED'))
+        for key in ['X-FOST-Headers']:
+            self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
+
+
+    def test_signed_get_with_query_string(self):
+        self.request.META['QUERY_STRING'] = 'query'
         self.request.sign_request(self.key, self.secret())
         key, self.hmac = self.middleware.key_hmac(self.request)
         with mock.patch('fost_authn.authentication._forbid', self.fail):

@@ -1,3 +1,6 @@
+2012-04-03  Kirit Saelensminde  <kirit@felspar.com>
+ When there is a query string the document to be signed needs to include the query string itself (as sent by the browser) as the document.
+
 2012-04-02  Kirit Saelensminde  <kirit@felspar.com>
  Use the key in the Authorization header to look up the user name.
  Allow the timestamp to have an embedded 'T' as per the ISO standard.

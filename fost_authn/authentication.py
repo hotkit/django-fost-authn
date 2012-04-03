@@ -62,7 +62,6 @@ def _default_authn_get_secret(request, key):
 
 
 def _request_signature(backend, request, key, hmac):
-    request.SIGNED = {}
     if not request.META.has_key('HTTP_X_FOST_TIMESTAMP'):
         return _forbid("No HTTP_X_FOST_TIMESTAMP was found")
     secret = getattr(settings, 'FOST_AUTHN_GET_SECRET',
@@ -84,7 +83,9 @@ def _request_signature(backend, request, key, hmac):
         "skew is too high" if skew > delta else "skew is ok")
     if skew < delta:
         signed_headers, signed = [], {}
+        logging.debug("Signed headers: %s", request.META['HTTP_X_FOST_HEADERS'])
         for header in request.META['HTTP_X_FOST_HEADERS'].split():
+            logging.info("Header %s included in signed set", header)
             name = 'HTTP_%s' % header.upper().replace('-', '_')
             value = request.META[name]
             signed[header] = value
@@ -94,7 +95,7 @@ def _request_signature(backend, request, key, hmac):
             request.method, request.path,
             request.META['HTTP_X_FOST_TIMESTAMP'],
             signed_headers,
-            request.raw_post_data)
+            request.raw_post_data or request.META.get('QUERY_STRING', ''))
         if signature == hmac:
             request.SIGNED = signed
             if request.SIGNED.has_key('X-FOST-User'):
