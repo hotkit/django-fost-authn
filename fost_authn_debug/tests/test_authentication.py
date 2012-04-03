@@ -61,7 +61,6 @@ class TestAuthentication(_TestBaseWithGetSecret):
             result = self.backend.authenticate(request = self.request,
                     key = self.key, hmac = self.hmac)
         self.assertTrue(forbidden)
-        self.assertEquals(self.request.SIGNED, {})
 
 
     def test_signed_request(self):
