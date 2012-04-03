@@ -72,7 +72,7 @@ class TestAuthentication(_TestBaseWithGetSecret):
             self.assertTrue(self.request.SIGNED.has_key(key), (key, self.request.SIGNED))
 
 
-    def test_signed_request(self):
+    def test_signed_request_with_iso_timestamp(self):
         now = self.request.META['HTTP_X_FOST_TIMESTAMP']
         self.request.META['HTTP_X_FOST_TIMESTAMP'] = now[:10] + 'T' + now[11:] + 'Z'
         self.request.sign_request(self.key, self.secret())
