@@ -23,9 +23,10 @@ class MockRequest(object):
         for key, value in headers.items():
             self.META['HTTP_%s' % key.upper().replace('-', '_')] = value
             self.META['HTTP_X_FOST_HEADERS'] += ' %s' % key
+        query = self.META.get('QUERY_STRING', '')
         document, signature = \
             fost_hmac_request_signature(secret, self.method, self.path,
-                self.META['HTTP_X_FOST_TIMESTAMP'], headers, self.raw_post_data)
+                self.META['HTTP_X_FOST_TIMESTAMP'], headers, self.raw_post_data or query)
         self.META['HTTP_AUTHORIZATION'] = 'FOST %s:%s' % (quote(key), signature)
 
     def sign_url(self, key, secret):
