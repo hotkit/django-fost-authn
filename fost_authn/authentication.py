@@ -66,7 +66,6 @@ def _default_authn_get_secret(request, key):
 def _django_1_0_hack(request):
     # For Django 1.0 unit tests we have to not read the POST/PUT data or we'll be
     # in trouble
-    print request.META.keys()
     return bool(request.META.get('CONTENT_LENGTH', 0) and
         VERSION[0] == 1 and VERSION[1] == 0 and hasattr(mail, 'outbox'))
 
