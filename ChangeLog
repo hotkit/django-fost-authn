@@ -1,3 +1,6 @@
+2012-04-05  Kirit Saelensminde  <kirit@felspar.com>
+ Added an especially ugly hack to get around a problem with Django 1.0 and the test client which breaks the raw_post_data.
+
 2012-04-03  Kirit Saelensminde  <kirit@felspar.com>
  When there is a query string the document to be signed needs to include the query string itself (as sent by the browser) as the document.
 
