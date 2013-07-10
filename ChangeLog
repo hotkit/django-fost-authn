@@ -1,6 +1,9 @@
 2013-07-10  Kirit Saelensminde  <kirit@felspar.com>
  Assume that the user name in the Authorization header will be UTF-7 encoded.
 
+2012-05-01  Kirit Saelensminde  <kirit@felspar.com>
+ Removed a log that was leaking the secret into the log file.
+
 2012-04-05  Kirit Saelensminde  <kirit@felspar.com>
  Added an especially ugly hack to get around a problem with Django 1.0 and the test client which breaks the raw_post_data.
 
