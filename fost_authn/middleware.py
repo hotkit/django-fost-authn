@@ -15,7 +15,8 @@ class Middleware:
     def get_userpass(self, authorization):
         credentials = authorization.split(':')
         if len(credentials) == 2:
-            return credentials
+            user, pw = credentials
+            return [user.decode('utf-7'), pw]
         return [None, None]
 
     def key_hmac(self, request):

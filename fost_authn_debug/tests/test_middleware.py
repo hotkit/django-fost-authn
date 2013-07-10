@@ -37,6 +37,11 @@ class AuthorizationParser(TestCase):
         u = self.m.get_userpass('userpass')
         self.assertEquals(u, [None, None])
 
+    def test_unicode_username(self):
+        # Unicode 0x2014 is mdash
+        u = self.m.get_userpass(u'user\u2014name:pass'.encode('utf-7'))
+        self.assertEquals(u, [u'user\u2014name', 'pass'])
+
 
 class InvalidHeader(TestCase):
     def setUp(self):
