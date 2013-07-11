@@ -102,8 +102,8 @@ class TestSigned(_TestBaseWithGetSecret):
         Perform various tests on the signed headers
     """
     def test_signed_request(self):
-        user = self.add_users('test-user1', 'test-user2')
-        headers = {'X-FOST-User': user.username}
+        user = self.add_users('test-user1', 'test-user2', u'test\u2014user3')
+        headers = {'X-FOST-User': user.username.encode('utf-7')}
         self.request.sign_request(self.key, self.secret(), headers)
         key, self.hmac = self.middleware.key_hmac(self.request)
         with mock.patch('fost_authn.authentication._forbid', self.fail):
