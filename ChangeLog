@@ -1,3 +1,6 @@
+2013-07-11  Kirit Saelensminde  <kirit@felspar.com>
+ Assume that the user name in the X-FOST-User header will be UTF-7 encoded.
+
 2013-07-10  Kirit Saelensminde  <kirit@felspar.com>
  Assume that the user name in the Authorization header will be UTF-7 encoded.
 

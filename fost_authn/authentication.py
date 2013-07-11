@@ -113,7 +113,8 @@ def _request_signature(backend, request, key, hmac):
         if signature == hmac:
             request.SIGNED = signed
             if request.SIGNED.has_key('X-FOST-User'):
-                return backend.get_user(request.SIGNED['X-FOST-User'])
+                return backend.get_user(
+                    request.SIGNED['X-FOST-User'].decode('utf-7'))
             else:
                 return backend.get_user(unquote(key))
         else:
