@@ -1,3 +1,6 @@
+2013-09-19  Kirit Saelensminde  <kirit@felspar.com>
+ If there's a UTF-7 decode error then just try the user name as passed in the header.
+
 2013-07-11  Kirit Saelensminde  <kirit@felspar.com>
  Assume that the user name in the X-FOST-User header will be UTF-7 encoded.
 
