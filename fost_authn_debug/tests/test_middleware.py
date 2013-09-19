@@ -42,6 +42,10 @@ class AuthorizationParser(TestCase):
         u = self.m.get_userpass(u'user\u2014name:pass'.encode('utf-7'))
         self.assertEquals(u, [u'user\u2014name', 'pass'])
 
+    def test_broken_utf7_username(self):
+        u = self.m.get_userpass(u'Sn428Dzafk13UvHXhA+nKH91RvAIUi5gdtaU/txDHLvER:pass')
+        self.assertEquals(u, [u'Sn428Dzafk13UvHXhA+nKH91RvAIUi5gdtaU/txDHLvER', 'pass'])
+
 
 class InvalidHeader(TestCase):
     def setUp(self):

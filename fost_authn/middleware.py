@@ -16,7 +16,10 @@ class Middleware:
         credentials = authorization.split(':')
         if len(credentials) == 2:
             user, pw = credentials
-            return [user.decode('utf-7'), pw]
+            try:
+                return [user.decode('utf-7'), pw]
+            except UnicodeDecodeError:
+                return [user, pw]
         return [None, None]
 
     def key_hmac(self, request):
