@@ -104,12 +104,17 @@ def _request_signature(backend, request, key, hmac):
                 "that the signature is correct")
             signature = hmac
         else:
+            if hasattr(request, 'body'):
+                # Django 1.6 compatibility
+                body = request.body
+            else:
+                body = request.raw_post_data
             document, signature = fost_hmac_request_signature_with_headers(
                 secret,
                 request.method, request.path,
                 request.META['HTTP_X_FOST_TIMESTAMP'],
                 signed_headers,
-                request.raw_post_data or request.META.get('QUERY_STRING', ''))
+                body or request.META.get('QUERY_STRING', ''))
         if signature == hmac:
             request.SIGNED = signed
             if request.SIGNED.has_key('X-FOST-User'):
