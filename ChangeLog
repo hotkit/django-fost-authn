@@ -1,3 +1,6 @@
+2013-11-26  Kirit Saelensminde  <kirit@felspar.com>
+ Basic work to make it Django 1.6 compatible.
+
 2013-09-19  Kirit Saelensminde  <kirit@felspar.com>
  If there's a UTF-7 decode error then just try the user name as passed in the header.
 
