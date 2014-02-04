@@ -59,7 +59,7 @@ The maximum allowed difference between the time when the request was signed and 
 
 # Signing requests #
 
-In order to authenticate against the back end requests must be properly signed. `fost_auth.signature' includes two functions for doing this that can be used.
+In order to authenticate against the back end requests must be properly signed. `fost_authn.signature' includes two functions for doing this that can be used.
 
 ## `fost_hmac_request_signature(secret, method, path, timestamp, headers = {}, body = '')` ##
 
