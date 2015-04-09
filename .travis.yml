@@ -10,5 +10,4 @@ install:
     - "pip install -r test-projects/common.pip -r test-projects/django_${DJANGO}/setup.pip"
 
 script:
-    - "pylint --rcfile=pylintrc --output-format=colorized fost_authn"
     - "cd test-projects/django${DJANGO} && python -tt manage.py test ${OPTS} fost_authn fost_authn_debug"
