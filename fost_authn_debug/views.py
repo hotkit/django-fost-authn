@@ -13,4 +13,4 @@ def anonymous(request):
 
 def signed(request):
     assert request.user.is_authenticated()
-    return HttpResponse(request.user.username, mimetype='text/plain')
+    return HttpResponse(request.user.username, 'text/plain')
