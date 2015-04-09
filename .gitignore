@@ -1,5 +1,6 @@
 /build/
 /coverage
 /test-projects/django1_4/.coverage
+/test-projects/django1_7/.coverage
 *~
 *.pyc
