@@ -6,6 +6,7 @@ python:
 env:
     - DJANGO=1_4
     - DJANGO=1_7
+    - DJANGO=1_8
 
 install:
     - "pip install -r test-projects/setup.pip -r test-projects/django${DJANGO}/setup.pip"
