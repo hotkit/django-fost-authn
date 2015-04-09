@@ -70,12 +70,6 @@ It is the responsibility of the caller to correctly place the header values into
 
 # Running tests #
 
-For best results create a virtualenv, then initialise it with test.pip.:
 
-    mkvirtualenv django-fost-authn
-    pip install -r test.pip
-
-Run the tests using:
-
-    ./runtest
+To create virtual environments for running the tests you can execute `test-projects/make-virtual-environments`. To run the tests execute `runtests`.
 
