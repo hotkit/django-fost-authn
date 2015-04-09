@@ -1,5 +1,6 @@
 2015-05-09  Kirit Saelensminde  <kirit@felspar.com>
  Set up a better Django 1.4 project, and do it so that we can add other Django versions.
+ Added Django 1.7 to the tests.
 
 2013-11-26  Kirit Saelensminde  <kirit@felspar.com>
  Basic work to make it Django 1.6 compatible.
