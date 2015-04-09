@@ -36,6 +36,17 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_nose',
+
+    # Provides some testing feedback
+    'fost_authn_debug',
+)
+
+# The authentication backends have been added to the settings file
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'fost_authn.FostBackend',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -46,7 +57,20 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'fost_authn.Middleware',
 )
+
+# Needed to get the Django nose test runner working
+TEST_RUNNER='django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-erase',
+    '--cover-branches',
+    '--cover-package=fost_authn',
+    '--cover-package=fost_authn_debug',
+    '--cover-html', '--cover-html-dir=../../coverage',
+]
 
 ROOT_URLCONF = 'django1_7.urls'
 
