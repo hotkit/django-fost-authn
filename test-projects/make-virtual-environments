@@ -10,6 +10,10 @@ function check_worked {
     fi
 }
 
-mkvirtualenv --no-site-package fost-auth-1.4
+mkvirtualenv fost-auth-1.4
 check_worked pip install -U -r setup.pip -r django1_4/setup.pip
+deactivate
+
+mkvirtualenv fost-auth-1.7
+check_worked pip install -U -r setup.pip -r django1_7/setup.pip
 deactivate
