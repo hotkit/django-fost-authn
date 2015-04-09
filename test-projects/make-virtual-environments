@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+cd `dirname $0`
+
+source virtualenvwrapper.sh
+
+function check_worked {
+    if ! $*
+    then
+        exit 1
+    fi
+}
+
+mkvirtualenv --no-site-package fost-auth-1.4
+check_worked pip install -U -r setup.pip -r django1_4/setup.pip
+deactivate
