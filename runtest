@@ -1,7 +1,17 @@
 #!/bin/bash
+cd `dirname $0`
 
-cd test-projects/no_models
-export PYTHONPATH=${PYTHONPATH}:../..
-python ./manage.py test fost_authn fost_authn_debug \
-    --with-coverage --cover-erase \
-    --cover-package=fost_authn --cover-package=fost_authn_debug
+source virtualenvwrapper.sh
+
+# virtualenvwrapper doesn't work with "set -e
+function check_worked {
+    if ! $*
+    then
+        exit 1
+    fi
+}
+
+echo Django 1.4
+cd test-projects/django1_4
+workon fost-auth-1.4
+check_worked python ./manage.py test fost_authn fost_authn_debug
