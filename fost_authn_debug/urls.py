@@ -1,12 +1,12 @@
 try:
     # This API has changed.
-    from django.conf.urls import patterns
+    from django.conf.urls import url
 except ImportError:
-    from django.conf.urls.defaults import patterns
+    from django.conf.urls.defaults import url
 
 
-urlpatterns = patterns('',
-    (r'^$', 'fost_authn_debug.views.root'),
-    (r'^anonymous/$', 'fost_authn_debug.views.anonymous'),
-    (r'^signed/$', 'fost_authn_debug.views.signed'),
-)
+urlpatterns = [
+    url(r'^$', 'fost_authn_debug.views.root'),
+    url(r'^anonymous/$', 'fost_authn_debug.views.anonymous'),
+    url(r'^signed/$', 'fost_authn_debug.views.signed'),
+]
