@@ -37,6 +37,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Provides some testing feedback
+    'fost_authn_debug',
+)
+
+# The authentication backends have been added to the settings file
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'fost_authn.FostBackend',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,6 +57,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'fost_authn.Middleware',
 )
 
 ROOT_URLCONF = 'django1_8.urls'
