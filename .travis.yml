@@ -7,7 +7,7 @@ env:
     - DJANGO=1_4
 
 install:
-    - "pip install -r test-projects/setup.pip -r test-projects/django_${DJANGO}/setup.pip"
+    - "pip install -r test-projects/setup.pip -r test-projects/django${DJANGO}/setup.pip"
 
 script:
     - "cd test-projects/django${DJANGO} && python -tt manage.py test ${OPTS} fost_authn fost_authn_debug"
